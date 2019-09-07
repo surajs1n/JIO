@@ -38,11 +38,11 @@ public class StringGenerator {
         timer.setStartTime(System.nanoTime());
 
         final int length = ALPHABETS.length();
-        final String inputString = "";
+        String inputString = "";
 
         Random random = new Random();
         for(int i=0; i<startLen; i++) {
-            inputString.concat(String.valueOf(ALPHABETS.charAt(random.nextInt(length))));
+            inputString = inputString.concat(String.valueOf(ALPHABETS.charAt(random.nextInt(length))));
         }
 
         timer.setEndTime(System.nanoTime());
