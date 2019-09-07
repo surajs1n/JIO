@@ -1,4 +1,4 @@
-package io.pojo;
+package io.timer;
 
 public class Timer {
     private long startTime;
