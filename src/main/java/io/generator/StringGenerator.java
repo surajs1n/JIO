@@ -1,7 +1,7 @@
 package io.generator;
 
 import io.model.StringGeneratorInput;
-import io.timer.StringGeneratorTimer;
+import io.metrics.StringGeneratorTimer;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package io.timer;
+package io.metrics;
 
 public class Timer {
     private long startTime;

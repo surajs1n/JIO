@@ -1,7 +1,8 @@
 package io.writer;
 
-import io.timer.OutputFileTimer;
+import io.metrics.OutputFileTimer;
 
+import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,11 +24,37 @@ public class WriteToFile {
 
             try(OutputStream fileOutputStream = new FileOutputStream(filePath)) {
                 int j=0;
-                while(j < fileLength) {
+                while (j < fileLength) {
                     fileOutputStream.write(file.charAt(j));
                     j++;
                 }
                 fileOutputStream.flush();
+            } catch (FileNotFoundException e) {
+                System.err.println("Not able to locate the file you are looking for : " + filePath);
+            }
+
+            timer.setEndTime(System.nanoTime());
+            timerList.add(timer);
+        }
+    }
+
+    public void writeToFileWithBuffer(final List<String> stringList,
+                                      final List<OutputFileTimer> timerList) throws IOException {
+        for(int i=0; i<stringList.size(); i++) {
+            String file = stringList.get(i);
+            int fileLength = file.length();
+            String filePath = OUTPUT_FILE_PREFIX + fileLength + ".txt";
+
+            OutputFileTimer timer = new OutputFileTimer(fileLength, true);
+            timer.setStartTime(System.nanoTime());
+
+            try (OutputStream fileBufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filePath))) {
+                int j=0;
+                while (j < fileLength) {
+                    fileBufferedOutputStream.write(file.charAt(j));
+                    j++;
+                }
+                fileBufferedOutputStream.flush();
             } catch (FileNotFoundException e) {
                 System.err.println("Not able to locate the file you are looking for : " + filePath);
             }

@@ -24,3 +24,9 @@ hs_err_pid*
 
 # Intellij's logs
 .idea/
+target/
+
+# Package specific temporary files
+src/main/resources/sample/*.txt
+src/main/resources/results/*.csv
+src/main/resources/results/*.tsv

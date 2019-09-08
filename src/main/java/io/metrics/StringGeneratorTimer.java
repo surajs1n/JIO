@@ -1,4 +1,4 @@
-package io.timer;
+package io.metrics;
 
 public class StringGeneratorTimer extends Timer {
     private long stringLen;
