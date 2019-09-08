@@ -1,9 +1,10 @@
 package io;
 
 import io.generator.StringGenerator;
+import io.metrics.FileTimer;
 import io.model.StringGeneratorInput;
-import io.metrics.OutputFileTimer;
 import io.metrics.StringGeneratorTimer;
+import io.reader.ReadFromFile;
 import io.writer.WriteToFile;
 
 import java.io.File;
@@ -18,13 +19,14 @@ public class BaseApp {
 
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
+    private static final ReadFromFile readFromFile = new ReadFromFile();
 
     /**
      * This is the entry place of the project. It does the following things.
-     * 1. Generate List of Strings and pump those into files maintaining one:one (string:file) mapping.
-     * 2. Read those files into List of String inside Application.
-     * 3.
-     * 4.
+     * 1. Generate List of Strings and pump those into files maintaining one:one (string:file) mapping, and capture metrics.
+     * 2. Dump those metrics result into CSV file for analysis.
+     * 3. Read those files into List of String inside Application.
+     * 4. Dump those metrics result into CSV file for analysis.
      * @param args - Arguments passed through CLI.
      */
     public static void main(String []args) throws IOException {
@@ -42,7 +44,7 @@ public class BaseApp {
             System.err.println("Ideally both (Generated Strings & Generated Strings Timer) should have the same size.");
         }
 
-        final List<OutputFileTimer> outputFileWithoutBufferTimers = new ArrayList<>();
+        final List<FileTimer> outputFileWithoutBufferTimers = new ArrayList<>();
         writeToFile.writeToFileWithoutBuffer(generatedStrings, outputFileWithoutBufferTimers);
         if (generatedStrings.size() == outputFileWithoutBufferTimers.size()) {
             for(int i=0; i<outputFileWithoutBufferTimers.size(); i++) {
@@ -55,7 +57,7 @@ public class BaseApp {
 
         cleanUpResourceFolder(RESOURCE_SAMPLE_FOLDER);
 
-        final List<OutputFileTimer> outputFileWithBufferTimers = new ArrayList<>();
+        final List<FileTimer> outputFileWithBufferTimers = new ArrayList<>();
         writeToFile.writeToFileWithBuffer(generatedStrings, outputFileWithBufferTimers);
         if (generatedStrings.size() == outputFileWithBufferTimers.size()) {
             for(int i=0; i<outputFileWithBufferTimers.size(); i++) {
@@ -66,6 +68,31 @@ public class BaseApp {
             System.err.println("Ideally both (Buffered Output Strings & Buffered Output Strings Timer) should have the same size.");
         }
 
+        /* 3. Read those files into List of String inside Application.  */
+        final List<FileTimer> inputFileWithoutBufferTimers = new ArrayList<>();
+        final List<String> readFilesWithoutBuffer = readFromFile.readFromFileWithoutBuffer(RESOURCE_SAMPLE_FOLDER, inputFileWithoutBufferTimers);
+        if (readFilesWithoutBuffer.size() == inputFileWithoutBufferTimers.size()) {
+            for(int i=0; i<inputFileWithoutBufferTimers.size(); i++) {
+                System.out.println("Input string of size => " + inputFileWithoutBufferTimers.get(i).getFileLen() + " took "
+                        + (inputFileWithoutBufferTimers.get(i).getEndTime() - inputFileWithoutBufferTimers.get(i).getStartTime()) + " time to read from file.");
+            }
+        } else {
+            System.err.println("Ideally both (Input Strings & Input String Timer) should have the same size.");
+        }
+
+        final List<FileTimer> inputFileWithBufferTimers = new ArrayList<>();
+        final List<String> readFilesWithBuffer = readFromFile.readFromFileWithBuffer(RESOURCE_SAMPLE_FOLDER, inputFileWithBufferTimers);
+        if (readFilesWithBuffer.size() == inputFileWithBufferTimers.size()) {
+            for(int i=0; i<inputFileWithBufferTimers.size(); i++) {
+                System.out.println("Input string of size => " + inputFileWithBufferTimers.get(i).getFileLen()  + " took "
+                        + (inputFileWithBufferTimers.get(i).getEndTime() - inputFileWithBufferTimers.get(i).getStartTime()) + " time to read from file using buffer.");
+            }
+        } else {
+            System.err.println("Ideally both () should have the same size.");
+        }
+
+        cleanUpResourceFolder(RESOURCE_SAMPLE_FOLDER);
+
     }
 
     private static void cleanUpResourceFolder(final String folderPath) {
@@ -74,6 +101,7 @@ public class BaseApp {
         if (folder.isDirectory()) {
             String [] fileNames = folder.list();
             String [] filesTobeDeleted = new String[fileNames.length];
+
             for(int i=0, j=0; i<fileNames.length; i++) {
                 if(!NOT_TO_BE_DELETED_FILE.equals(fileNames[i])) {
                     filesTobeDeleted[j] = fileNames[i];
@@ -104,7 +132,7 @@ public class BaseApp {
                 .newInstance()
                 .minLen(10000)
                 .maxLen(100000)
-                .deltaLen(5000)
+                .deltaLen(10000)
                 .numberOfCopies(50).build();
     }
 }

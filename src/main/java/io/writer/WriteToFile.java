@@ -1,6 +1,6 @@
 package io.writer;
 
-import io.metrics.OutputFileTimer;
+import io.metrics.FileTimer;
 
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
@@ -13,13 +13,13 @@ public class WriteToFile {
     private static final String OUTPUT_FILE_PREFIX = "./src/main/resources/sample/File-";
 
     public void writeToFileWithoutBuffer(final List<String> stringList,
-                                         final List<OutputFileTimer> timerList) throws IOException {
+                                         final List<FileTimer> timerList) throws IOException {
         for(int i=0; i<stringList.size(); i++) {
             String file     = stringList.get(i);
             int fileLength  = file.length();
             String filePath = OUTPUT_FILE_PREFIX + fileLength + ".txt";
 
-            OutputFileTimer timer = new OutputFileTimer(fileLength, false);
+            FileTimer timer = new FileTimer(fileLength, false);
             timer.setStartTime(System.nanoTime());
 
             try(OutputStream fileOutputStream = new FileOutputStream(filePath)) {
@@ -39,13 +39,13 @@ public class WriteToFile {
     }
 
     public void writeToFileWithBuffer(final List<String> stringList,
-                                      final List<OutputFileTimer> timerList) throws IOException {
+                                      final List<FileTimer> timerList) throws IOException {
         for(int i=0; i<stringList.size(); i++) {
             String file = stringList.get(i);
             int fileLength = file.length();
             String filePath = OUTPUT_FILE_PREFIX + fileLength + ".txt";
 
-            OutputFileTimer timer = new OutputFileTimer(fileLength, true);
+            FileTimer timer = new FileTimer(fileLength, true);
             timer.setStartTime(System.nanoTime());
 
             try (OutputStream fileBufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filePath))) {

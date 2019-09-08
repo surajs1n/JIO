@@ -1,16 +1,22 @@
 package io.metrics;
 
-public class OutputFileTimer extends Timer {
+public class FileTimer extends Timer {
     private int fileLen;
     private boolean isBufferUsed;
 
-    public OutputFileTimer() {
+    public FileTimer() {
         super();
         this.fileLen = 0;
         this.isBufferUsed = false;
     }
 
-    public OutputFileTimer(final int fileLen, final boolean isBufferUsed) {
+    public FileTimer(final boolean isBufferUsed) {
+        super();
+        this.fileLen = 0;
+        this.isBufferUsed = false;
+    }
+
+    public FileTimer(final int fileLen, final boolean isBufferUsed) {
         super();
         this.fileLen = fileLen;
         this.isBufferUsed = isBufferUsed;
@@ -34,7 +40,7 @@ public class OutputFileTimer extends Timer {
 
     @Override
     public String toString() {
-        return "OutputFileTimer{" +
+        return "FileTimer{" +
                 "fileLen=" + fileLen +
                 ", isBufferUsed=" + isBufferUsed +
                 ", startTime=" + getStartTime() +
