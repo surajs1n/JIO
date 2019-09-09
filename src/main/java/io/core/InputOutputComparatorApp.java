@@ -1,5 +1,6 @@
-package io;
+package io.core;
 
+import io.cleanup.CleanUp;
 import io.generator.StringGenerator;
 import io.metrics.FileTimer;
 import io.model.StringGeneratorInput;
@@ -8,12 +9,11 @@ import io.reader.ReadFromFile;
 import io.resultwriter.CSVWriter;
 import io.writer.WriteToFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseApp {
+public class InputOutputComparatorApp {
 
     private static final String RESOURCE_SAMPLE_FOLDER = "./src/main/resources/sample";
     private static final String NOT_TO_BE_DELETED_FILE = "GITIGNORE";
@@ -26,9 +26,8 @@ public class BaseApp {
     /**
      * This is the entry place of the project. It does the following things.
      * 1. Generate List of Strings and pump those into files maintaining one:one (string:file) mapping, and capture metrics.
-     * 2. Dump those metrics result into CSV file for analysis.
-     * 3. Read those files into List of String inside Application.
-     * 4. Dump those metrics result into CSV file for analysis.
+     * 2. Read those files into List of String inside Application.
+     * 3. Dump those metrics result into CSV file for analysis.
      * @param args - Arguments passed through CLI.
      */
     public static void main(String []args) throws IOException {
@@ -57,7 +56,7 @@ public class BaseApp {
             System.err.println("Ideally both (Output Strings & Output Strings Timer) should have the same size.");
         }
 
-        cleanUpResourceFolder(RESOURCE_SAMPLE_FOLDER);
+        CleanUp.cleanUpFolder(RESOURCE_SAMPLE_FOLDER);
 
         final List<FileTimer> outputFileWithBufferTimers = new ArrayList<>();
         writeToFile.writeToFileWithBuffer(generatedStrings, outputFileWithBufferTimers);
@@ -93,7 +92,7 @@ public class BaseApp {
             System.err.println("Ideally both () should have the same size.");
         }
 
-        cleanUpResourceFolder(RESOURCE_SAMPLE_FOLDER);
+        CleanUp.cleanUpFolder(RESOURCE_SAMPLE_FOLDER);
 
         //TODO: sorting in pending.
 
@@ -133,38 +132,6 @@ public class BaseApp {
         csvWriter.writeResult("FileInputWithoutBuffer-Metrics", inputFileWithoutBufferTimerCSVHeader, inputFileWithoutBufferTimerCSVOutput);
         csvWriter.writeResult("FileInputWithBuffer-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
 
-    }
-
-    private static void cleanUpResourceFolder(final String folderPath) {
-        File folder = new File(folderPath);
-
-        if (folder.isDirectory()) {
-            String [] fileNames = folder.list();
-            String [] filesTobeDeleted = new String[fileNames.length];
-
-            for(int i=0, j=0; i<fileNames.length; i++) {
-                if(!NOT_TO_BE_DELETED_FILE.equals(fileNames[i])) {
-                    filesTobeDeleted[j] = fileNames[i];
-                    j++;
-                }
-            }
-
-            for(int j=0; j<filesTobeDeleted.length; j++) {
-                File file = new File(RESOURCE_SAMPLE_FOLDER + "/" + filesTobeDeleted[j]);
-                if (file.exists()) {
-                    if (file.delete()) {
-                        System.out.println(file.getPath() + " is successfully deleted.");
-                    } else {
-                        System.err.println("Unable to delete : " + file.getPath());
-                    }
-                } else {
-                    System.out.println("Unable to locate file : " + file.getPath());
-                }
-            }
-
-        } else {
-            System.err.println("Unfortunately, It is not a folder : " + folderPath);
-        }
     }
 
     private static StringGeneratorInput getStringGeneratorInput() {
