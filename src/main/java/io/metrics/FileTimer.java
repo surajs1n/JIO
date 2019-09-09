@@ -47,4 +47,12 @@ public class FileTimer extends Timer {
                 ", endTime=" + getEndTime() +
                 '}';
     }
+
+    public static String getClassHeaderInCSV() {
+        return "File Length , isBufferUsed , Start Time (ns) , End Time (ns)";
+    }
+
+    public String getObjectDataInCSV() {
+        return String.format(this.fileLen + " , " + this.isBufferUsed + " , " + getStartTime() + " , " + getEndTime());
+    }
 }

@@ -5,6 +5,7 @@ import io.metrics.FileTimer;
 import io.model.StringGeneratorInput;
 import io.metrics.StringGeneratorTimer;
 import io.reader.ReadFromFile;
+import io.resultwriter.CSVWriter;
 import io.writer.WriteToFile;
 
 import java.io.File;
@@ -20,6 +21,7 @@ public class BaseApp {
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
     private static final ReadFromFile readFromFile = new ReadFromFile();
+    private static final CSVWriter csvWriter = new CSVWriter();
 
     /**
      * This is the entry place of the project. It does the following things.
@@ -92,6 +94,44 @@ public class BaseApp {
         }
 
         cleanUpResourceFolder(RESOURCE_SAMPLE_FOLDER);
+
+        //TODO: sorting in pending.
+
+        final String stringGeneratorTimersCSVHeader = StringGeneratorTimer.getClassHeaderInCSV();
+        final List<String> stringGeneratorTimersCSVOutput = new ArrayList<>();
+        for(StringGeneratorTimer timer: stringGeneratorTimers) {
+            stringGeneratorTimersCSVOutput.add(timer.getObjectDataInCSV());
+        }
+
+        final String outputFileWithoutBufferTimerCSVHeader = FileTimer.getClassHeaderInCSV();
+        final List<String> outputFileWithoutBufferTimerCSVOutput = new ArrayList<>();
+        for(FileTimer timer : outputFileWithoutBufferTimers) {
+            outputFileWithoutBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
+        }
+
+        final String outputFileWithBufferTimerCSVHeader = FileTimer.getClassHeaderInCSV();
+        final List<String> outputFileWithBufferTimerCSVOutput = new ArrayList<>();
+        for(FileTimer timer: outputFileWithBufferTimers) {
+            outputFileWithBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
+        }
+
+        final String inputFileWithoutBufferTimerCSVHeader = FileTimer.getClassHeaderInCSV();
+        final List<String> inputFileWithoutBufferTimerCSVOutput = new ArrayList<>();
+        for(FileTimer timer: inputFileWithoutBufferTimers) {
+            inputFileWithoutBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
+        }
+
+        final String inputFileWithBufferTimerCSVHeader = FileTimer.getClassHeaderInCSV();
+        final List<String> inputFileWithBufferTimerCSVOutput = new ArrayList<>();
+        for(FileTimer timer: inputFileWithBufferTimers) {
+            inputFileWithBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
+        }
+
+        csvWriter.writeResult("StringGenerator-Metrics", stringGeneratorTimersCSVHeader, stringGeneratorTimersCSVOutput);
+        csvWriter.writeResult("FileOutputWithoutBuffer-Metrics", outputFileWithoutBufferTimerCSVHeader, outputFileWithoutBufferTimerCSVOutput);
+        csvWriter.writeResult("FileOutputWithBuffer-Metrics", outputFileWithBufferTimerCSVHeader, outputFileWithBufferTimerCSVOutput);
+        csvWriter.writeResult("FileInputWithoutBuffer-Metrics", inputFileWithoutBufferTimerCSVHeader, inputFileWithoutBufferTimerCSVOutput);
+        csvWriter.writeResult("FileInputWithBuffer-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
 
     }
 
