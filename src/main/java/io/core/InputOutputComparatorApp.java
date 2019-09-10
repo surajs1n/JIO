@@ -16,7 +16,6 @@ import java.util.List;
 public class InputOutputComparatorApp {
 
     private static final String RESOURCE_SAMPLE_FOLDER = "./src/main/resources/sample";
-    private static final String NOT_TO_BE_DELETED_FILE = "GITIGNORE";
 
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
@@ -96,31 +95,31 @@ public class InputOutputComparatorApp {
 
         //TODO: sorting in pending.
 
-        final String stringGeneratorTimersCSVHeader = StringGeneratorTimer.getClassHeaderInCSV();
+        final String stringGeneratorTimersCSVHeader = stringGeneratorTimers.get(0).getClassHeaderInCSV();
         final List<String> stringGeneratorTimersCSVOutput = new ArrayList<>();
         for(StringGeneratorTimer timer: stringGeneratorTimers) {
             stringGeneratorTimersCSVOutput.add(timer.getObjectDataInCSV());
         }
 
-        final String outputFileWithoutBufferTimerCSVHeader = FileTimer.getClassHeaderInCSV();
+        final String outputFileWithoutBufferTimerCSVHeader = outputFileWithoutBufferTimers.get(0).getClassHeaderInCSV();
         final List<String> outputFileWithoutBufferTimerCSVOutput = new ArrayList<>();
         for(FileTimer timer : outputFileWithoutBufferTimers) {
             outputFileWithoutBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
         }
 
-        final String outputFileWithBufferTimerCSVHeader = FileTimer.getClassHeaderInCSV();
+        final String outputFileWithBufferTimerCSVHeader = outputFileWithBufferTimers.get(0).getClassHeaderInCSV();
         final List<String> outputFileWithBufferTimerCSVOutput = new ArrayList<>();
         for(FileTimer timer: outputFileWithBufferTimers) {
             outputFileWithBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
         }
 
-        final String inputFileWithoutBufferTimerCSVHeader = FileTimer.getClassHeaderInCSV();
+        final String inputFileWithoutBufferTimerCSVHeader = inputFileWithoutBufferTimers.get(0).getClassHeaderInCSV();
         final List<String> inputFileWithoutBufferTimerCSVOutput = new ArrayList<>();
         for(FileTimer timer: inputFileWithoutBufferTimers) {
             inputFileWithoutBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
         }
 
-        final String inputFileWithBufferTimerCSVHeader = FileTimer.getClassHeaderInCSV();
+        final String inputFileWithBufferTimerCSVHeader = inputFileWithBufferTimers.get(0).getClassHeaderInCSV();
         final List<String> inputFileWithBufferTimerCSVOutput = new ArrayList<>();
         for(FileTimer timer: inputFileWithBufferTimers) {
             inputFileWithBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
@@ -137,9 +136,9 @@ public class InputOutputComparatorApp {
     private static StringGeneratorInput getStringGeneratorInput() {
         return StringGeneratorInput.Builder
                 .newInstance()
-                .minLen(10000)
-                .maxLen(100000)
-                .deltaLen(10000)
+                .minLen(1000)
+                .maxLen(10000)
+                .deltaLen(1000)
                 .numberOfCopies(50).build();
     }
 }

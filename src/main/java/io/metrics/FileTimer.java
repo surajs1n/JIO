@@ -13,7 +13,7 @@ public class FileTimer extends Timer {
     public FileTimer(final boolean isBufferUsed) {
         super();
         this.fileLen = 0;
-        this.isBufferUsed = false;
+        this.isBufferUsed = isBufferUsed;
     }
 
     public FileTimer(final int fileLen, final boolean isBufferUsed) {
@@ -48,11 +48,15 @@ public class FileTimer extends Timer {
                 '}';
     }
 
-    public static String getClassHeaderInCSV() {
-        return "File Length , isBufferUsed , Start Time (ns) , End Time (ns)";
+    public String getClassHeaderInCSV() {
+        if (this.isBufferUsed) {
+            return "File Length , Buffered Time Taken (ns)";
+        } else {
+            return "File Length , Non-Buffered Time Taken (ns)";
+        }
     }
 
     public String getObjectDataInCSV() {
-        return String.format(this.fileLen + " , " + this.isBufferUsed + " , " + getStartTime() + " , " + getEndTime());
+        return String.format(this.fileLen + " , " + (getEndTime() - getStartTime()));
     }
 }

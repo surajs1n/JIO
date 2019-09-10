@@ -16,11 +16,11 @@ public class StringGeneratorTimer extends Timer {
         this.stringLen = stringLen;
     }
 
-    public static String getClassHeaderInCSV() {
-        return "String Length , Start Time (ns) , End Time (ns)";
+    public String getClassHeaderInCSV() {
+        return "String Length , Time Taken (ns)";
     }
 
     public String getObjectDataInCSV() {
-        return String.format(this.stringLen + " , " + getStartTime() + " , " + getEndTime());
+        return String.format(this.stringLen + " , " + (getEndTime() - getStartTime()));
     }
 }
