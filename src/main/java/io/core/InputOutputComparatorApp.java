@@ -5,6 +5,7 @@ import io.generator.StringGenerator;
 import io.metrics.FileTimer;
 import io.model.StringGeneratorInput;
 import io.metrics.StringGeneratorTimer;
+import io.os.OperatingSystemDetails;
 import io.reader.ReadFromFile;
 import io.resultwriter.CSVWriter;
 import io.writer.WriteToFile;
@@ -20,6 +21,7 @@ public class InputOutputComparatorApp {
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
     private static final ReadFromFile readFromFile = new ReadFromFile();
+    private static final OperatingSystemDetails osDetails = new OperatingSystemDetails();
     private static final CSVWriter csvWriter = new CSVWriter();
 
     /**
@@ -131,6 +133,7 @@ public class InputOutputComparatorApp {
         csvWriter.writeResult("FileInputWithoutBuffer-Metrics", inputFileWithoutBufferTimerCSVHeader, inputFileWithoutBufferTimerCSVOutput);
         csvWriter.writeResult("FileInputWithBuffer-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
 
+        osDetails.fetchOSDetails();
     }
 
     private static StringGeneratorInput getStringGeneratorInput() {
