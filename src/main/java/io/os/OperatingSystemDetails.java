@@ -1,166 +1,128 @@
 package io.os;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import oshi.SystemInfo;
+import oshi.hardware.Baseboard;
 import oshi.hardware.CentralProcessor;
-import oshi.hardware.CentralProcessor.TickType;
 import oshi.hardware.ComputerSystem;
+import oshi.hardware.Firmware;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HWDiskStore;
 import oshi.hardware.HWPartition;
 import oshi.hardware.HardwareAbstractionLayer;
-import oshi.hardware.VirtualMemory;
-import oshi.software.os.OSProcess;
+import oshi.hardware.Sensors;
 import oshi.software.os.OperatingSystem;
-import oshi.software.os.OperatingSystem.ProcessSort;
-import oshi.util.FormatUtil;
-import oshi.util.Util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class OperatingSystemDetails {
+    private final static double BILLION = 1000000000.0;
+    private final static double MEGA = 1024 * 1024;
 
-    private final static List<String> oshi = new ArrayList<>();
+    public static Map<String, String> fetchOSDetails() {
+        final Map<String, String> osDetails = new LinkedHashMap<>();
+        final SystemInfo si = new SystemInfo();
+        final HardwareAbstractionLayer hal = si.getHardware();
+        final OperatingSystem os = si.getOperatingSystem();
 
-    public Map<String, String> fetchOSDetails() {
-        final Map<String, String> osDetails = new HashMap<>();
-        hello();
+        getComputerSystemDetails(osDetails, hal.getComputerSystem());
+        getOperatingSystemDetails(osDetails, os);
+        getProcessorDetails(osDetails, hal.getProcessor());
+        getSensorsDetails(osDetails, hal.getSensors());
+        getMemoryDetails(osDetails, hal.getMemory());
+        getHardDisksDetails(osDetails, hal.getDiskStores());
+
+        for(Map.Entry<String, String> osDetail : osDetails.entrySet()) {
+            System.out.println(osDetail.getKey() + " => " + osDetail.getValue());
+        }
+
         return osDetails;
     }
 
-    public static void hello() {
-        System.out.println("Initializing System...");
-        SystemInfo si = new SystemInfo();
-
-        HardwareAbstractionLayer hal = si.getHardware();
-        OperatingSystem os = si.getOperatingSystem();
-
-        printOperatingSystem(os);
-
-        System.out.println("Checking computer system...");
-        printComputerSystem(hal.getComputerSystem());
-
-        System.out.println("Checking Processor...");
-        printProcessor(hal.getProcessor());
-
-        System.out.println("Checking Memory...");
-        printMemory(hal.getMemory());
-
-        System.out.println("Checking CPU...");
-        printCpu(hal.getProcessor());
-
-        System.out.println("Checking Processes...");
-        printProcesses(os, hal.getMemory());
-
-        System.out.println("Checking Disks...");
-        printDisks(hal.getDiskStores());
-
-        StringBuilder output = new StringBuilder();
-        for (int i = 0; i < oshi.size(); i++) {
-            output.append(oshi.get(i));
-            if (oshi.get(i) != null && !oshi.get(i).endsWith("\n")) {
-                output.append('\n');
-            }
-        }
-        System.out.println("Printing Operating System and Hardware Info: \n "+ output);
+    private static void getOperatingSystemDetails(final Map<String, String> osDetails, final OperatingSystem os) {
+        osDetails.put("OS Type", String.valueOf(SystemInfo.getCurrentPlatformEnum()));
+        osDetails.put("OS Manufacturer", String.valueOf(os.getManufacturer()));
+        osDetails.put("OS Family", String.valueOf(os.getFamily()));
+        osDetails.put("OS Bitness", String.valueOf(os.getBitness()));
+        osDetails.put("OS Version", String.valueOf(os.getVersion()));
+        osDetails.put("OS Name", String.valueOf(os));
+        osDetails.put("OS Total Process Count", String.valueOf(os.getProcessCount()));
+        osDetails.put("OS Total Thread Count", String.valueOf(os.getThreadCount()));
     }
 
-    private static void printOperatingSystem(final OperatingSystem os) {
-        System.out.println(String.valueOf(os));
+    private static void getComputerSystemDetails(final Map<String, String> osDetails, final ComputerSystem computerSystem) {
+        osDetails.put("Computer Manufacturer", String.valueOf(computerSystem.getManufacturer()));
+        osDetails.put("Computer Model", String.valueOf(computerSystem.getModel()));
+        osDetails.put("Computer Serial Number", String.valueOf(computerSystem.getSerialNumber()));
+        final Firmware firmware = computerSystem.getFirmware();
+        osDetails.put("Firmware Manufacturer", String.valueOf(firmware.getManufacturer()));
+        osDetails.put("Firmware Name", String.valueOf(firmware.getName()));
+        osDetails.put("Firmware Description", String.valueOf(firmware.getDescription()));
+        osDetails.put("Firmware Version", String.valueOf(firmware.getVersion()));
+        osDetails.put("Firmware Release Date", String.valueOf(firmware.getReleaseDate()));
+        final Baseboard baseboard = computerSystem.getBaseboard();
+        osDetails.put("BaseBoard Manufacturer", String.valueOf(baseboard.getManufacturer()));
+        osDetails.put("BaseBoard Model",String.valueOf(baseboard.getModel()));
+        osDetails.put("BaseBoard Serial Number",String.valueOf(baseboard.getSerialNumber()));
+        osDetails.put("BaseBoard Version",String.valueOf(baseboard.getVersion()));
     }
 
-    private static void printComputerSystem(final ComputerSystem computerSystem) {
-        System.out.println("system: " + ReflectionToStringBuilder.toString(computerSystem));
-        System.out.println(" firmware: " + ReflectionToStringBuilder.toString(computerSystem.getFirmware()));
-        System.out.println(" baseboard: " + ReflectionToStringBuilder.toString(computerSystem.getBaseboard()));
+    private static void getProcessorDetails(final Map<String, String> osDetails, final CentralProcessor processor) {
+        osDetails.put("Processor Vendor", String.valueOf(processor.getVendor()));
+        osDetails.put("Processor Name", String.valueOf(processor.getName()));
+        osDetails.put("Processor Frequency (GHz)", String.valueOf(processor.getVendorFreq()/BILLION));
+        osDetails.put("Processor 64-bit", String.valueOf(processor.isCpu64bit()));
+        osDetails.put("Processor Over-Clock Frequency (GHz)", String.valueOf(processor.getMaxFreq()/BILLION));
+        osDetails.put("Processor Identifier", String.valueOf(processor.getIdentifier()));
+        osDetails.put("Processor Stepping", String.valueOf(processor.getStepping()));
+        osDetails.put("Processor Model", String.valueOf(processor.getModel()));
+        osDetails.put("Processor Family", String.valueOf(processor.getFamily()));
+        osDetails.put("Number of Logical Processors", String.valueOf(processor.getLogicalProcessorCount()));
+        osDetails.put("Number of Physical Processors", String.valueOf(processor.getPhysicalProcessorCount()));
+        osDetails.put("Number of Processor Sockets", String.valueOf(processor.getPhysicalPackageCount()));
+        osDetails.put("Number of Context Switches", String.valueOf(processor.getContextSwitches()));
+        osDetails.put("Number of Interrupts", String.valueOf(processor.getInterrupts()));
     }
 
-    private static void printProcessor(CentralProcessor processor) {
-        System.out.println(processor.toString());
+    private static void getSensorsDetails(final Map<String, String> osDetails, final Sensors sensors) {
+        osDetails.put("CPU Temperature (*C)", String.valueOf(sensors.getCpuTemperature()));
+        osDetails.put("CPU Voltage (V)", String.valueOf(sensors.getCpuVoltage()));
     }
 
-    private static void printMemory(GlobalMemory memory) {
-        System.out.println("Memory: \n " + ReflectionToStringBuilder.toString(memory));
-        VirtualMemory vm = memory.getVirtualMemory();
-        System.out.println("Swap: \n " + ReflectionToStringBuilder.toString(vm));
+    private static void getMemoryDetails(final Map<String, String> osDetails, final GlobalMemory memory) {
+        osDetails.put("RAM Total Space (MB)", String.valueOf(memory.getTotal()/MEGA));
+        osDetails.put("RAM Available Space (MB)", String.valueOf(memory.getAvailable()/MEGA));
+        osDetails.put("RAM Page Size (Byte)", String.valueOf(memory.getPageSize()));
+        osDetails.put("Virtual Memory Total Space (MB)", String.valueOf(memory.getVirtualMemory().getSwapTotal()/MEGA));
+        osDetails.put("Virtual Memory Used Space (MB)", String.valueOf(memory.getVirtualMemory().getSwapUsed()/MEGA));
+        osDetails.put("Virtual Memory Page-In Space (MB)", String.valueOf(memory.getVirtualMemory().getSwapPagesIn()/MEGA));
+        osDetails.put("Virtual Memory Page-Out Space (MB)", String.valueOf(memory.getVirtualMemory().getSwapPagesOut()/MEGA));
     }
 
-    private static void printCpu(CentralProcessor processor) {
-        System.out.println("Context Switches/Interrupts: " + processor.getContextSwitches() + " / " + processor.getInterrupts());
+    private static void getHardDisksDetails(final Map<String, String> osDetails, final HWDiskStore[] diskStores) {
+        for(int i=1; i<=diskStores.length; i++) {
+            osDetails.put(String.format("Disk-" + i + " Name"), String.valueOf(diskStores[i-1].getName()));
+            osDetails.put(String.format("Disk-" + i + " Model"), String.valueOf(diskStores[i-1].getModel()));
+            osDetails.put(String.format("Disk-" + i + " Serial"), String.valueOf(diskStores[i-1].getSerial()));
+            osDetails.put(String.format("Disk-" + i + " Size"), String.valueOf(diskStores[i-1].getSize()));
+            osDetails.put(String.format("Disk-" + i + " Reads (MB)"), String.valueOf(diskStores[i-1].getReads()/MEGA));
+            osDetails.put(String.format("Disk-" + i + " ReadBytes (MB)"), String.valueOf(diskStores[i-1].getReadBytes()/MEGA));
+            osDetails.put(String.format("Disk-" + i + " Writes (MB)"), String.valueOf(diskStores[i-1].getWrites()/MEGA));
+            osDetails.put(String.format("Disk-" + i + " WriteBytes (MB)"), String.valueOf(diskStores[i-1].getWriteBytes()/MEGA));
+            osDetails.put(String.format("Disk-" + i + " Current Queue Length"), String.valueOf(diskStores[i-1].getCurrentQueueLength()));
+            osDetails.put(String.format("Disk-" + i + " Transfer Time"), String.valueOf(diskStores[i-1].getTransferTime()));
+            osDetails.put(String.format("Disk-" + i + " TimeStamp"), String.valueOf(diskStores[i-1].getTimeStamp()));
 
-        long[] prevTicks = processor.getSystemCpuLoadTicks();
-        long[][] prevProcTicks = processor.getProcessorCpuLoadTicks();
-        System.out.println("CPU, IOWait, and IRQ ticks @ 0 sec:" + Arrays.toString(prevTicks));
-        // Wait a second...
-        Util.sleep(1000);
-        long[] ticks = processor.getSystemCpuLoadTicks();
-        System.out.println("CPU, IOWait, and IRQ ticks @ 1 sec:" + Arrays.toString(ticks));
-        long user = ticks[TickType.USER.getIndex()] - prevTicks[TickType.USER.getIndex()];
-        long nice = ticks[TickType.NICE.getIndex()] - prevTicks[TickType.NICE.getIndex()];
-        long sys = ticks[TickType.SYSTEM.getIndex()] - prevTicks[TickType.SYSTEM.getIndex()];
-        long idle = ticks[TickType.IDLE.getIndex()] - prevTicks[TickType.IDLE.getIndex()];
-        long iowait = ticks[TickType.IOWAIT.getIndex()] - prevTicks[TickType.IOWAIT.getIndex()];
-        long irq = ticks[TickType.IRQ.getIndex()] - prevTicks[TickType.IRQ.getIndex()];
-        long softirq = ticks[TickType.SOFTIRQ.getIndex()] - prevTicks[TickType.SOFTIRQ.getIndex()];
-        long steal = ticks[TickType.STEAL.getIndex()] - prevTicks[TickType.STEAL.getIndex()];
-        long totalCpu = user + nice + sys + idle + iowait + irq + softirq + steal;
-
-        System.out.println(String.format(
-                "User: %.1f%% Nice: %.1f%% System: %.1f%% Idle: %.1f%% IOwait: %.1f%% IRQ: %.1f%% SoftIRQ: %.1f%% Steal: %.1f%%",
-                100d * user / totalCpu, 100d * nice / totalCpu, 100d * sys / totalCpu, 100d * idle / totalCpu,
-                100d * iowait / totalCpu, 100d * irq / totalCpu, 100d * softirq / totalCpu, 100d * steal / totalCpu));
-        System.out.println(String.format("CPU load: %.1f%%", processor.getSystemCpuLoadBetweenTicks(prevTicks) * 100));
-        double[] loadAverage = processor.getSystemLoadAverage(3);
-        System.out.println("CPU load averages:" + (loadAverage[0] < 0 ? " N/A" : String.format(" %.2f", loadAverage[0]))
-                + (loadAverage[1] < 0 ? " N/A" : String.format(" %.2f", loadAverage[1]))
-                + (loadAverage[2] < 0 ? " N/A" : String.format(" %.2f", loadAverage[2])));
-        // per core CPU
-        StringBuilder procCpu = new StringBuilder("CPU load per processor:");
-        double[] load = processor.getProcessorCpuLoadBetweenTicks(prevProcTicks);
-        for (double avg : load) {
-            procCpu.append(String.format(" %.1f%%", avg * 100));
-        }
-        System.out.println(procCpu.toString());
-        long[] freqs = processor.getCurrentFreq();
-        if (freqs[0] > 0) {
-            StringBuilder sb = new StringBuilder("Current Frequencies: ");
-            for (int i = 0; i < freqs.length; i++) {
-                if (i > 0) {
-                    sb.append(", ");
-                }
-                sb.append(FormatUtil.formatHertz(freqs[i]));
-            }
-            System.out.println(sb.toString());
-        }
-    }
-
-    private static void printProcesses(OperatingSystem os, GlobalMemory memory) {
-        System.out.println("Processes: " + os.getProcessCount() + ", Threads: " + os.getThreadCount());
-        // Sort by highest CPU
-        List<OSProcess> procs = Arrays.asList(os.getProcesses(5, ProcessSort.CPU));
-
-        System.out.println("   PID  %CPU %MEM       VSZ       RSS Name");
-        for (int i = 0; i < procs.size() && i < 5; i++) {
-            OSProcess p = procs.get(i);
-            System.out.println(String.format(" %5d %5.1f %4.1f %9s %9s %s", p.getProcessID(),
-                    100d * (p.getKernelTime() + p.getUserTime()) / p.getUpTime(),
-                    100d * p.getResidentSetSize() / memory.getTotal(), FormatUtil.formatBytes(p.getVirtualSize()),
-                    FormatUtil.formatBytes(p.getResidentSetSize()), p.getName()));
-        }
-    }
-
-    private static void printDisks(HWDiskStore[] diskStores) {
-        System.out.println("Disks:");
-        for (HWDiskStore disk : diskStores) {
-            System.out.println(" " + ReflectionToStringBuilder.toString(disk));
-
-            HWPartition[] partitions = disk.getPartitions();
-            for (HWPartition part : partitions) {
-                System.out.println(" |-- " + ReflectionToStringBuilder.toString(part));
+            final HWPartition [] hwPartitions = diskStores[i-1].getPartitions();
+            for(int j=1; j<=hwPartitions.length; j++) {
+                osDetails.put(String.format("Disk-" + i + " Partition-" + j + " Name"), String.valueOf(hwPartitions[j-1].getName()));
+                osDetails.put(String.format("Disk-" + i + " Partition-" + j + " Type"), String.valueOf(hwPartitions[j-1].getType()));
+                osDetails.put(String.format("Disk-" + i + " Partition-" + j + " Identification"), String.valueOf(hwPartitions[j-1].getIdentification()));
+                osDetails.put(String.format("Disk-" + i + " Partition-" + j + " UUID"), String.valueOf(hwPartitions[j-1].getUuid()));
+                osDetails.put(String.format("Disk-" + i + " Partition-" + j + " Size (GB)"), String.valueOf(hwPartitions[j-1].getSize()/(MEGA*1024)));
+                osDetails.put(String.format("Disk-" + i + " Partition-" + j + " Major"), String.valueOf(hwPartitions[j-1].getMajor()));
+                osDetails.put(String.format("Disk-" + i + " Partition-" + j + " Minor"), String.valueOf(hwPartitions[j-1].getMinor()));
+                osDetails.put(String.format("Disk-" + i + " Partition-" + j + " MountPoint"), String.valueOf(hwPartitions[j-1].getMountPoint()));
             }
         }
     }
