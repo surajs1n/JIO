@@ -12,6 +12,7 @@ import io.writer.WriteToFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -96,8 +97,6 @@ public class InputOutputComparatorApp {
 
         CleanUp.cleanUpFolder(RESOURCE_SAMPLE_FOLDER);
 
-        //TODO: sorting in pending.
-
         final String stringGeneratorTimersCSVHeader = stringGeneratorTimers.get(0).getClassHeaderInCSV();
         final List<String> stringGeneratorTimersCSVOutput = new ArrayList<>();
         for(StringGeneratorTimer timer: stringGeneratorTimers) {
@@ -134,21 +133,11 @@ public class InputOutputComparatorApp {
         csvWriter.writeResult("FileInputWithoutBuffer-Metrics", inputFileWithoutBufferTimerCSVHeader, inputFileWithoutBufferTimerCSVOutput);
         csvWriter.writeResult("FileInputWithBuffer-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
 
-        final Map<String, String> osDetailsMap = osDetails.fetchOSDetails();
+        osDetails.fetchOSDetails();
+        final String osHeader = osDetails.getCSVHeaderOfOSDetails();
+        final String osValues = osDetails.getCSVValuesofOSDetails();
+        csvWriter.writeResult("OSDetails", osHeader, Arrays.asList(osValues));
     }
-
-//    private static String getOSDetailsHeader(final Map<String, String> osDetailsMap) {
-//        String header = "";
-//        for(Map.Entry<String, String> osDetail : osDetailsMap.entrySet()) {
-//            System.out.println(osDetail.getKey() + " => " + osDetail.getValue());
-//        }
-//
-//        return header;
-//    }
-//
-//    private static List<String> getOSDetailsValues(final Map<String, String> osDetailsMap) {
-//
-//    }
 
     private static StringGeneratorInput getStringGeneratorInput() {
         return StringGeneratorInput.Builder

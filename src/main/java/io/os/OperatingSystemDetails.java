@@ -12,25 +12,28 @@ import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.Sensors;
 import oshi.software.os.OperatingSystem;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class OperatingSystemDetails {
     private final static double BILLION = 1000000000.0;
     private final static double MEGA = 1024 * 1024;
+    private final Map<String, String> osDetails = new LinkedHashMap<>();
 
-    public static Map<String, String> fetchOSDetails() {
-        final Map<String, String> osDetails = new LinkedHashMap<>();
+    public Map<String, String> fetchOSDetails() {
         final SystemInfo si = new SystemInfo();
         final HardwareAbstractionLayer hal = si.getHardware();
         final OperatingSystem os = si.getOperatingSystem();
 
-        getComputerSystemDetails(osDetails, hal.getComputerSystem());
-        getOperatingSystemDetails(osDetails, os);
-        getProcessorDetails(osDetails, hal.getProcessor());
-        getSensorsDetails(osDetails, hal.getSensors());
-        getMemoryDetails(osDetails, hal.getMemory());
-        getHardDisksDetails(osDetails, hal.getDiskStores());
+        getComputerSystemDetails(hal.getComputerSystem());
+        getOperatingSystemDetails(os);
+        getProcessorDetails(hal.getProcessor());
+        getSensorsDetails(hal.getSensors());
+        getMemoryDetails(hal.getMemory());
+        getHardDisksDetails(hal.getDiskStores());
 
         for(Map.Entry<String, String> osDetail : osDetails.entrySet()) {
             System.out.println(osDetail.getKey() + " => " + osDetail.getValue());
@@ -39,7 +42,33 @@ public class OperatingSystemDetails {
         return osDetails;
     }
 
-    private static void getOperatingSystemDetails(final Map<String, String> osDetails, final OperatingSystem os) {
+    public String getCSVHeaderOfOSDetails() {
+        final Set<String> headerList = osDetails.keySet();
+        Iterator<String> it = headerList.iterator();
+
+        String result = it.next();
+        while (it.hasNext()) {
+            result += "," + it.next();
+        }
+
+        System.out.println(result);
+        return result;
+    }
+
+    public String getCSVValuesofOSDetails() {
+        final Collection<String> values = osDetails.values();
+        Iterator<String> it = values.iterator();
+
+        String result = it.next();
+        while (it.hasNext()) {
+            result += "," + it.next();
+        }
+
+        System.out.println(result);
+        return result;
+    }
+
+    private void getOperatingSystemDetails(final OperatingSystem os) {
         osDetails.put("OS Type", String.valueOf(SystemInfo.getCurrentPlatformEnum()));
         osDetails.put("OS Manufacturer", String.valueOf(os.getManufacturer()));
         osDetails.put("OS Family", String.valueOf(os.getFamily()));
@@ -50,7 +79,7 @@ public class OperatingSystemDetails {
         osDetails.put("OS Total Thread Count", String.valueOf(os.getThreadCount()));
     }
 
-    private static void getComputerSystemDetails(final Map<String, String> osDetails, final ComputerSystem computerSystem) {
+    private void getComputerSystemDetails(final ComputerSystem computerSystem) {
         osDetails.put("Computer Manufacturer", String.valueOf(computerSystem.getManufacturer()));
         osDetails.put("Computer Model", String.valueOf(computerSystem.getModel()));
         osDetails.put("Computer Serial Number", String.valueOf(computerSystem.getSerialNumber()));
@@ -67,7 +96,7 @@ public class OperatingSystemDetails {
         osDetails.put("BaseBoard Version",String.valueOf(baseboard.getVersion()));
     }
 
-    private static void getProcessorDetails(final Map<String, String> osDetails, final CentralProcessor processor) {
+    private void getProcessorDetails(final CentralProcessor processor) {
         osDetails.put("Processor Vendor", String.valueOf(processor.getVendor()));
         osDetails.put("Processor Name", String.valueOf(processor.getName()));
         osDetails.put("Processor Frequency (GHz)", String.valueOf(processor.getVendorFreq()/BILLION));
@@ -84,12 +113,12 @@ public class OperatingSystemDetails {
         osDetails.put("Number of Interrupts", String.valueOf(processor.getInterrupts()));
     }
 
-    private static void getSensorsDetails(final Map<String, String> osDetails, final Sensors sensors) {
+    private void getSensorsDetails(final Sensors sensors) {
         osDetails.put("CPU Temperature (*C)", String.valueOf(sensors.getCpuTemperature()));
         osDetails.put("CPU Voltage (V)", String.valueOf(sensors.getCpuVoltage()));
     }
 
-    private static void getMemoryDetails(final Map<String, String> osDetails, final GlobalMemory memory) {
+    private void getMemoryDetails(final GlobalMemory memory) {
         osDetails.put("RAM Total Space (MB)", String.valueOf(memory.getTotal()/MEGA));
         osDetails.put("RAM Available Space (MB)", String.valueOf(memory.getAvailable()/MEGA));
         osDetails.put("RAM Page Size (Byte)", String.valueOf(memory.getPageSize()));
@@ -99,12 +128,12 @@ public class OperatingSystemDetails {
         osDetails.put("Virtual Memory Page-Out Space (MB)", String.valueOf(memory.getVirtualMemory().getSwapPagesOut()/MEGA));
     }
 
-    private static void getHardDisksDetails(final Map<String, String> osDetails, final HWDiskStore[] diskStores) {
+    private void getHardDisksDetails(final HWDiskStore[] diskStores) {
         for(int i=1; i<=diskStores.length; i++) {
             osDetails.put(String.format("Disk-" + i + " Name"), String.valueOf(diskStores[i-1].getName()));
             osDetails.put(String.format("Disk-" + i + " Model"), String.valueOf(diskStores[i-1].getModel()));
             osDetails.put(String.format("Disk-" + i + " Serial"), String.valueOf(diskStores[i-1].getSerial()));
-            osDetails.put(String.format("Disk-" + i + " Size"), String.valueOf(diskStores[i-1].getSize()));
+            osDetails.put(String.format("Disk-" + i + " Size (GB)"), String.valueOf(diskStores[i-1].getSize()/(MEGA*1024)));
             osDetails.put(String.format("Disk-" + i + " Reads (MB)"), String.valueOf(diskStores[i-1].getReads()/MEGA));
             osDetails.put(String.format("Disk-" + i + " ReadBytes (MB)"), String.valueOf(diskStores[i-1].getReadBytes()/MEGA));
             osDetails.put(String.format("Disk-" + i + " Writes (MB)"), String.valueOf(diskStores[i-1].getWrites()/MEGA));
