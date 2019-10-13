@@ -63,4 +63,32 @@ public class WriteToFile {
             timerList.add(timer);
         }
     }
+
+    public void writeToFileWithBuffer(final List<String> stringList,
+                                      final Integer bufferSize,
+                                      final List<FileTimer> timerList) throws IOException {
+        for(int i=0; i<stringList.size(); i++) {
+            String file = stringList.get(i);
+            int fileLength = file.length();
+            String filePath = OUTPUT_FILE_PREFIX + fileLength + ".txt";
+
+            FileTimer timer = new FileTimer(fileLength, true);
+            timer.setStartTime(System.nanoTime());
+            timer.setBufferSize(bufferSize);
+
+            try (OutputStream fileBufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filePath), bufferSize)) {
+                int j=0;
+                while (j < fileLength) {
+                    fileBufferedOutputStream.write(file.charAt(j));
+                    j++;
+                }
+                fileBufferedOutputStream.flush();
+            } catch (FileNotFoundException e) {
+                System.err.println("Not able to locate the file you are looking for : " + filePath);
+            }
+
+            timer.setEndTime(System.nanoTime());
+            timerList.add(timer);
+        }
+    }
 }

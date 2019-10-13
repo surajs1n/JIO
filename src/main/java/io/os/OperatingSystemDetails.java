@@ -18,10 +18,25 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This class will contain all the operation related to fetching and manipulating the OS details.
+ */
 public class OperatingSystemDetails {
     private final static double BILLION = 1000000000.0;
     private final static double MEGA = 1024 * 1024;
     private final Map<String, String> osDetails = new LinkedHashMap<>();
+
+    private static OperatingSystemDetails INSTANCE = null;
+    private OperatingSystemDetails() {
+
+    }
+
+    public static OperatingSystemDetails getOperatingSystemDetails() {
+        if (INSTANCE == null)
+            return new OperatingSystemDetails();
+
+        return INSTANCE;
+    }
 
     public Map<String, String> fetchOSDetails() {
         final SystemInfo si = new SystemInfo();

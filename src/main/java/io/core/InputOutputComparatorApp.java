@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class InputOutputComparatorApp {
 
@@ -23,14 +22,15 @@ public class InputOutputComparatorApp {
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
     private static final ReadFromFile readFromFile = new ReadFromFile();
-    private static final OperatingSystemDetails osDetails = new OperatingSystemDetails();
+    private static final OperatingSystemDetails osDetails = OperatingSystemDetails.getOperatingSystemDetails();
     private static final CSVWriter csvWriter = new CSVWriter();
 
     /**
      * This is the entry place of the project. It does the following things.
      * 1. Generate List of Strings and pump those into files maintaining one:one (string:file) mapping, and capture metrics.
-     * 2. Read those files into List of String inside Application.
-     * 3. Dump those metrics result into CSV file for analysis.
+     * 2. Read those files into List of String inside application.
+     * 3. Save those metrics result into CSV file for analysis.
+     * 4. Read the details of current Operating System and also save that into another CSV file.
      * @param args - Arguments passed through CLI.
      */
     public static void main(String []args) throws IOException {
@@ -72,7 +72,7 @@ public class InputOutputComparatorApp {
             System.err.println("Ideally both (Buffered Output Strings & Buffered Output Strings Timer) should have the same size.");
         }
 
-        /* 3. Read those files into List of String inside Application.  */
+        /* 2. Read those files into List of String inside Application.  */
         final List<FileTimer> inputFileWithoutBufferTimers = new ArrayList<>();
         final List<String> readFilesWithoutBuffer = readFromFile.readFromFileWithoutBuffer(RESOURCE_SAMPLE_FOLDER, inputFileWithoutBufferTimers);
         if (readFilesWithoutBuffer.size() == inputFileWithoutBufferTimers.size()) {
@@ -127,12 +127,14 @@ public class InputOutputComparatorApp {
             inputFileWithBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
         }
 
+        /* 3. Save those metrics result into CSV file for analysis.  */
         csvWriter.writeResult("StringGenerator-Metrics", stringGeneratorTimersCSVHeader, stringGeneratorTimersCSVOutput);
         csvWriter.writeResult("FileOutputWithoutBuffer-Metrics", outputFileWithoutBufferTimerCSVHeader, outputFileWithoutBufferTimerCSVOutput);
         csvWriter.writeResult("FileOutputWithBuffer-Metrics", outputFileWithBufferTimerCSVHeader, outputFileWithBufferTimerCSVOutput);
         csvWriter.writeResult("FileInputWithoutBuffer-Metrics", inputFileWithoutBufferTimerCSVHeader, inputFileWithoutBufferTimerCSVOutput);
         csvWriter.writeResult("FileInputWithBuffer-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
 
+        /* 4. Read the details of current Operating System and also save that into another CSV file.  */
         osDetails.fetchOSDetails();
         final String osHeader = osDetails.getCSVHeaderOfOSDetails();
         final String osValues = osDetails.getCSVValuesofOSDetails();
@@ -145,6 +147,7 @@ public class InputOutputComparatorApp {
                 .minLen(1000)
                 .maxLen(10000)
                 .deltaLen(1000)
-                .numberOfCopies(50).build();
+                .numberOfCopies(50)
+                .build();
     }
 }
