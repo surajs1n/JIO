@@ -1,5 +1,6 @@
 package io.core;
 
+import io.cleanup.CleanUp;
 import io.generator.StringGenerator;
 import io.metrics.FileTimer;
 import io.metrics.StringGeneratorTimer;
@@ -83,14 +84,16 @@ public class BufferedInputVariationComparatorApp {
         final String osHeader = osDetails.getCSVHeaderOfOSDetails();
         final String osValues = osDetails.getCSVValuesofOSDetails();
         csvWriter.writeResult("OSDetails", osHeader, Arrays.asList(osValues));
+
+        CleanUp.cleanUpFolder(RESOURCE_SAMPLE_FOLDER);
     }
 
     private static BufferSizeInput getBufferSizeInput() {
         return BufferSizeInput.Builder
                 .newInstance()
-                .minSize(10)
-                .maxSize(5000)
-                .deltaSize(50)
+                .minSize(1)
+                .maxSize(10000)
+                .deltaSize(1)
                 .build();
     }
 
@@ -101,8 +104,8 @@ public class BufferedInputVariationComparatorApp {
     private static StringGeneratorInput getStringGeneratorInput() {
         return StringGeneratorInput.Builder
                 .newInstance()
-                .minLen(100000)
-                .maxLen(100000)
+                .minLen(10000000)
+                .maxLen(10000000)
                 .deltaLen(1)
                 .numberOfCopies(1)
                 .build();

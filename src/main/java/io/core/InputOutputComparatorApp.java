@@ -35,6 +35,8 @@ public class InputOutputComparatorApp {
      */
     public static void main(String []args) throws IOException {
 
+        osDetails.fetchOSDetails();
+
         /* 1. Generate List of Strings and pump those into files maintaining one:one (string:file) mapping and capture metrics. */
         final StringGeneratorInput generatorInput = getStringGeneratorInput();
         final List<StringGeneratorTimer> stringGeneratorTimers = new ArrayList<StringGeneratorTimer>();
@@ -134,20 +136,21 @@ public class InputOutputComparatorApp {
         csvWriter.writeResult("FileInputWithoutBuffer-Metrics", inputFileWithoutBufferTimerCSVHeader, inputFileWithoutBufferTimerCSVOutput);
         csvWriter.writeResult("FileInputWithBuffer-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
 
-        /* 4. Read the details of current Operating System and also save that into another CSV file.  */
-        osDetails.fetchOSDetails();
+        /* 4. Save the details of current Operating System into another CSV file.  */
         final String osHeader = osDetails.getCSVHeaderOfOSDetails();
         final String osValues = osDetails.getCSVValuesofOSDetails();
         csvWriter.writeResult("OSDetails", osHeader, Arrays.asList(osValues));
+
+        CleanUp.cleanUpFolder(RESOURCE_SAMPLE_FOLDER);
     }
 
     private static StringGeneratorInput getStringGeneratorInput() {
         return StringGeneratorInput.Builder
                 .newInstance()
-                .minLen(1000)
-                .maxLen(10000)
-                .deltaLen(1000)
-                .numberOfCopies(50)
+                .minLen(5)
+                .maxLen(1000000)
+                .deltaLen(100)
+                .numberOfCopies(10000)
                 .build();
     }
 }
