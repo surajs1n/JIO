@@ -7,7 +7,6 @@ import io.metrics.StringGeneratorTimer;
 import io.model.BufferSizeInput;
 import io.model.StringGeneratorInput;
 import io.os.OperatingSystemDetails;
-import io.reader.ReadFromFile;
 import io.resultwriter.CSVWriter;
 import io.writer.WriteToFile;
 
@@ -17,15 +16,14 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * This Application captures the metrics of reading the data from file using different size of buffers.
+ * This Application captures the metrics of writing the data into file using different size of buffers.
  */
-public class BufferedInputVariationComparatorApp {
+public class BufferedOutputVariationComparatorApp {
 
     private static final String RESOURCE_SAMPLE_FOLDER = "./src/main/resources/sample";
 
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
-    private static final ReadFromFile readFromFile = new ReadFromFile();
     private static final OperatingSystemDetails osDetails = OperatingSystemDetails.getOperatingSystemDetails();
     private static final CSVWriter csvWriter = new CSVWriter();
 
@@ -33,17 +31,15 @@ public class BufferedInputVariationComparatorApp {
      * The main function does the following operations:
      * 1. Read the Operating System Details.
      * 2. Generate a random string of predefined size.
-     * 3. Write generated string onto File.
-     * 4. Loop through and reading the same again and again with different size of buffer.
-     * 5. Get the Header and Values separated.
-     * 6. Write Buffered FileOutput Varying.
-     * 7. CleanUp the directory.
-     *
+     * 3. Loop through and write onto File again and again with different buffer-size.
+     * 4. Get the Header and Values separated.
+     * 5. Write Buffered FileOutput Varying.
+     * 6. CleanUp the directory.
      *
      * @param args - Arguments captured through CLI.
      * @throws IOException
      */
-    public static void main(String []args) throws IOException {
+    public static void main(String [] args) throws IOException {
 
         /* 1. Read the Operating System Details. */
         osDetails.fetchOSDetails();
@@ -61,50 +57,41 @@ public class BufferedInputVariationComparatorApp {
             System.err.println("Ideally both (Generated Strings & Generated Strings Timer) should have the same size.");
         }
 
-        /* 3. Write generated string onto File. */
+        /* 3. Loop through and write onto File again and again with different buffer-size. */
         final List<FileTimer> outputFileTimers = new ArrayList<>();
-        writeToFile.writeToFileWithBuffer(generatedStrings, outputFileTimers);
-        if (generatedStrings.size() == outputFileTimers.size()) {
-            for (int i=0; i<outputFileTimers.size(); i++) {
-                System.out.println("Output string of size => " + outputFileTimers.get(i).getFileLen() + " took "
-                        + (outputFileTimers.get(i).getEndTime() - outputFileTimers.get(i).getStartTime()) + " time to write into file.");
-            }
-        } else {
-            System.err.println("Ideally both (Output Strings & Output Strings Timer) should have the same size.");
-        }
-
-        /* 4. Loop through and reading the same again and again with different size of buffer. */
-        final List<FileTimer> inputBufferTimers = new ArrayList<>();
-        final BufferSizeInput input = getBufferSizeInput();
-        for (int bufferSize = input.getMinSize(); bufferSize <= input.getMaxSize(); bufferSize += input.getDeltaSize()) {
+        final BufferSizeInput bufferSizeInput = getBufferSizeInput();
+        for(int bufferSize = bufferSizeInput.getMinSize(); bufferSize <= bufferSizeInput.getMaxSize(); bufferSize += bufferSizeInput.getDeltaSize()) {
             final List<FileTimer> bufferTimers = new ArrayList<>();
-            final List<String> readBufferedStrings = readFromFile.readFromFileWithBuffer(RESOURCE_SAMPLE_FOLDER, bufferSize, bufferTimers);
-            if (readBufferedStrings.size() == bufferTimers.size()) {
-                for (int i = 0; i < bufferTimers.size(); i++) {
-                    System.out.println("Input string of size => " + bufferTimers.get(i).getFileLen() + " took "
+            writeToFile.writeToFileWithBuffer(generatedStrings, bufferSize, bufferTimers);
+            if (generatedStrings.size() == bufferTimers.size()) {
+                for (int i=0; i< bufferTimers.size(); i++) {
+                    System.out.println("Output string of size => " + bufferTimers.get(i).getFileLen() + " took "
                             + (bufferTimers.get(i).getEndTime() - bufferTimers.get(i).getStartTime()) + " time to read from file with "
                             + bufferTimers.get(i).getBufferSize() + " buffer size.");
-                }
 
-                inputBufferTimers.add(bufferTimers.get(0));
+                    outputFileTimers.add(bufferTimers.get(0));
+                    CleanUp.cleanUpFolder(RESOURCE_SAMPLE_FOLDER);
+                }
             } else {
-                System.err.println("Ideally both (Input Strings & Input String Timer) should have the same size.");
+                System.err.println("Ideally both (Output Strings & Output Strings Timer) should have the same size.");
             }
         }
 
-        /* 5. Get the Header and Values separated. */
-        final String inputFileWithBufferTimerCSVHeader = inputBufferTimers.get(0).getClassHeaderInCSV();
-        final List<String> inputFileWithBufferTimerCSVOutput = new ArrayList<>();
-        for (FileTimer timer : inputBufferTimers) {
-            inputFileWithBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
+        /* 4. Get the Header and Values separated. */
+        final String outputFileWithBufferTimerCSVHeader = outputFileTimers.get(0).getClassHeaderInCSV();
+        final List<String> outputFileWithBufferTimerCSVOutput = new ArrayList<>();
+        for (FileTimer timer : outputFileTimers) {
+            outputFileWithBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
         }
 
-        csvWriter.writeResult("FileInputWithVaryingBufferSize-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
+        /* 5. Write Buffered FileOutput Varying. */
+        csvWriter.writeResult("FileOutputWithVaryingBufferSize-Metrics", outputFileWithBufferTimerCSVHeader, outputFileWithBufferTimerCSVOutput);
 
         final String osHeader = osDetails.getCSVHeaderOfOSDetails();
         final String osValues = osDetails.getCSVValuesofOSDetails();
         csvWriter.writeResult("OSDetails", osHeader, Arrays.asList(osValues));
 
+        /* 6. CleanUp the directory. */
         CleanUp.cleanUpFolder(RESOURCE_SAMPLE_FOLDER);
     }
 

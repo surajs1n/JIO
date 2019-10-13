@@ -15,7 +15,7 @@ public class CleanUp {
 
         if (folder.isDirectory()) {
             String [] fileNames = folder.list();
-            String [] filesTobeDeleted = new String[fileNames.length];
+            String [] filesTobeDeleted = new String[fileNames.length - 1];
 
             for(int i=0, j=0; i<fileNames.length; i++) {
                 if(!NOT_TO_BE_DELETED_FILE.equals(fileNames[i])) {
