@@ -9,15 +9,26 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+/**
+ * Core class to contain all the write to file methods.
+ */
 public class WriteToFile {
-    private static final String OUTPUT_FILE_PREFIX = "./src/main/resources/sample/File-";
+    private static final String OUTPUT_FILE_PREFIX = "File-";
 
-    public void writeToFileWithoutBuffer(final List<String> stringList,
+    /**
+     * Function to write list of strings into folder without using buffer memory and also to capture the Metrics.
+     * @param folderPath - Path of folder where to write.
+     * @param stringList - List of string to be outputted.
+     * @param timerList - List of Timer.
+     * @throws IOException - throws in case of exception.
+     */
+    public void writeToFileWithoutBuffer(final String folderPath,
+                                         final List<String> stringList,
                                          final List<FileTimer> timerList) throws IOException {
         for(int i=0; i<stringList.size(); i++) {
             String file     = stringList.get(i);
             int fileLength  = file.length();
-            String filePath = OUTPUT_FILE_PREFIX + fileLength + ".txt";
+            String filePath = folderPath + "/" + OUTPUT_FILE_PREFIX + fileLength + ".txt";
 
             FileTimer timer = new FileTimer(fileLength, false);
             timer.setStartTime(System.nanoTime());
@@ -38,12 +49,20 @@ public class WriteToFile {
         }
     }
 
-    public void writeToFileWithBuffer(final List<String> stringList,
+    /**
+     * Function to write list of strings into folder using buffer memory and also to capture the Metrics.
+     * @param folderPath - Path of folder where to write.
+     * @param stringList - List of string to be outputted.
+     * @param timerList - List of Timer.
+     * @throws IOException - throws in case of exception.
+     */
+    public void writeToFileWithBuffer(final String folderPath,
+                                      final List<String> stringList,
                                       final List<FileTimer> timerList) throws IOException {
         for(int i=0; i<stringList.size(); i++) {
             String file = stringList.get(i);
             int fileLength = file.length();
-            String filePath = OUTPUT_FILE_PREFIX + fileLength + ".txt";
+            String filePath = folderPath + "/" + OUTPUT_FILE_PREFIX + fileLength + ".txt";
 
             FileTimer timer = new FileTimer(fileLength, true);
             timer.setStartTime(System.nanoTime());
@@ -64,13 +83,21 @@ public class WriteToFile {
         }
     }
 
-    public void writeToFileWithBuffer(final List<String> stringList,
+    /**
+     * Function to write list of strings into folder using varying buffer memory and also to capture the metrics.
+     * @param folderPath - Path of folder where to write.
+     * @param stringList - List of string to be outputted.
+     * @param timerList - List of Timer.
+     * @throws IOException - throws in case of exception.
+     */
+    public void writeToFileWithBuffer(final String folderPath,
+                                      final List<String> stringList,
                                       final Integer bufferSize,
                                       final List<FileTimer> timerList) throws IOException {
         for(int i=0; i<stringList.size(); i++) {
             String file = stringList.get(i);
             int fileLength = file.length();
-            String filePath = OUTPUT_FILE_PREFIX + fileLength + ".txt";
+            String filePath = folderPath + "/" + OUTPUT_FILE_PREFIX + fileLength + ".txt";
 
             FileTimer timer = new FileTimer(fileLength, true);
             timer.setStartTime(System.nanoTime());

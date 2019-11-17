@@ -26,11 +26,20 @@ public class OperatingSystemDetails {
     private final static double MEGA = 1024 * 1024;
     private final Map<String, String> osDetails = new LinkedHashMap<>();
 
+    private static String UNIQUE_OS_DETAILS = "";
     private static OperatingSystemDetails INSTANCE = null;
     private OperatingSystemDetails() {
-
+        super();
     }
 
+    public static String getUniqueOSDetails() {
+        return UNIQUE_OS_DETAILS;
+    }
+
+    /**
+     * Function to get a single instance of a class.
+     * @return
+     */
     public static OperatingSystemDetails getOperatingSystemDetails() {
         if (INSTANCE == null)
             return new OperatingSystemDetails();
@@ -38,6 +47,10 @@ public class OperatingSystemDetails {
         return INSTANCE;
     }
 
+    /**
+     * Fetch and collect the details of Operating System into Map.
+     * @return a map containing the operating system's details.
+     */
     public Map<String, String> fetchOSDetails() {
         final SystemInfo si = new SystemInfo();
         final HardwareAbstractionLayer hal = si.getHardware();
@@ -54,9 +67,15 @@ public class OperatingSystemDetails {
             System.out.println(osDetail.getKey() + " => " + osDetail.getValue());
         }
 
+        System.out.println("UNIQUE OS DETAILS ->" + UNIQUE_OS_DETAILS);
+
         return osDetails;
     }
 
+    /**
+     * Function to create and return the CSV header of OSDetails map.
+     * @return - the CSV header of OSDetails map.
+     */
     public String getCSVHeaderOfOSDetails() {
         final Set<String> headerList = osDetails.keySet();
         Iterator<String> it = headerList.iterator();
@@ -70,6 +89,10 @@ public class OperatingSystemDetails {
         return result;
     }
 
+    /**
+     * Function to create and return the CSV values of OSDetails map.
+     * @return - the CSV values of OSDetails map.
+     */
     public String getCSVValuesofOSDetails() {
         final Collection<String> values = osDetails.values();
         Iterator<String> it = values.iterator();
@@ -92,6 +115,12 @@ public class OperatingSystemDetails {
         osDetails.put("OS Name", String.valueOf(os));
         osDetails.put("OS Total Process Count", String.valueOf(os.getProcessCount()));
         osDetails.put("OS Total Thread Count", String.valueOf(os.getThreadCount()));
+
+        UNIQUE_OS_DETAILS += String.valueOf(SystemInfo.getCurrentPlatformEnum()) + "_"
+                + String.valueOf(os.getManufacturer()) + "_"
+                + String.valueOf(os.getFamily()) + "_"
+                + String.valueOf(os.getBitness()) + "_"
+                + String.valueOf(os.getVersion()) + "_";
     }
 
     private void getComputerSystemDetails(final ComputerSystem computerSystem) {
@@ -126,6 +155,13 @@ public class OperatingSystemDetails {
         osDetails.put("Number of Processor Sockets", String.valueOf(processor.getPhysicalPackageCount()));
         osDetails.put("Number of Context Switches", String.valueOf(processor.getContextSwitches()));
         osDetails.put("Number of Interrupts", String.valueOf(processor.getInterrupts()));
+
+        UNIQUE_OS_DETAILS += String.valueOf(processor.getName()) + "_"
+                + String.valueOf(processor.getIdentifier()) + "_"
+                + "LogicalProcessor_" + String.valueOf(processor.getLogicalProcessorCount()) + "_"
+                + "PhysicalProcessor_" + String.valueOf(processor.getPhysicalProcessorCount()) + "_"
+                + "Socket(s)_" + String.valueOf(processor.getPhysicalPackageCount()) + "_";
+
     }
 
     private void getSensorsDetails(final Sensors sensors) {
@@ -141,6 +177,9 @@ public class OperatingSystemDetails {
         osDetails.put("Virtual Memory Used Space (MB)", String.valueOf(memory.getVirtualMemory().getSwapUsed()/MEGA));
         osDetails.put("Virtual Memory Page-In Space (MB)", String.valueOf(memory.getVirtualMemory().getSwapPagesIn()/MEGA));
         osDetails.put("Virtual Memory Page-Out Space (MB)", String.valueOf(memory.getVirtualMemory().getSwapPagesOut()/MEGA));
+
+        UNIQUE_OS_DETAILS += "RAM_Size(MB)_" + String.valueOf(memory.getTotal()/MEGA) + "_"
+                + "RAM_Page_Size(B)_" + String.valueOf(memory.getPageSize());
     }
 
     private void getHardDisksDetails(final HWDiskStore[] diskStores) {

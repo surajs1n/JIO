@@ -62,7 +62,7 @@ public class BufferedOutputVariationComparatorApp {
         final BufferSizeInput bufferSizeInput = getBufferSizeInput();
         for(int bufferSize = bufferSizeInput.getMinSize(); bufferSize <= bufferSizeInput.getMaxSize(); bufferSize += bufferSizeInput.getDeltaSize()) {
             final List<FileTimer> bufferTimers = new ArrayList<>();
-            writeToFile.writeToFileWithBuffer(generatedStrings, bufferSize, bufferTimers);
+            writeToFile.writeToFileWithBuffer(RESOURCE_SAMPLE_FOLDER, generatedStrings, bufferSize, bufferTimers);
             if (generatedStrings.size() == bufferTimers.size()) {
                 for (int i=0; i< bufferTimers.size(); i++) {
                     System.out.println("Output string of size => " + bufferTimers.get(i).getFileLen() + " took "

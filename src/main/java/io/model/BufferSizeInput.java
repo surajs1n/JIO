@@ -1,6 +1,8 @@
 package io.model;
 
-
+/**
+ * Input model class for describing input parameter for varying buffer size testing.
+ */
 public class BufferSizeInput {
 
     private final int minSize;

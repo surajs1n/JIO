@@ -1,5 +1,8 @@
 package io.model;
 
+/**
+ * Input model class of random string generator.
+ */
 public class StringGeneratorInput {
 
     private final long minLen;

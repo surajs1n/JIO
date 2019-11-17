@@ -2,7 +2,10 @@ package io.cleanup;
 
 import java.io.File;
 
-public class CleanUp {
+/**
+ * A non-inheritable class used for cleaning-up given folder path.
+ */
+public final class CleanUp {
 
     private static final String NOT_TO_BE_DELETED_FILE = "GITIGNORE";
 
@@ -10,6 +13,10 @@ public class CleanUp {
 
     }
 
+    /**
+     * Function to clean-up all the files except "GITIGNORE".
+     * @param folderPath - Path to the folder trying to delete.
+     */
     public static void cleanUpFolder(final String folderPath) {
         File folder = new File(folderPath);
 

@@ -39,7 +39,6 @@ public class BufferedInputVariationComparatorApp {
      * 6. Write Buffered FileOutput Varying.
      * 7. CleanUp the directory.
      *
-     *
      * @param args - Arguments captured through CLI.
      * @throws IOException
      */
@@ -63,7 +62,7 @@ public class BufferedInputVariationComparatorApp {
 
         /* 3. Write generated string onto File. */
         final List<FileTimer> outputFileTimers = new ArrayList<>();
-        writeToFile.writeToFileWithBuffer(generatedStrings, outputFileTimers);
+        writeToFile.writeToFileWithBuffer(RESOURCE_SAMPLE_FOLDER, generatedStrings, outputFileTimers);
         if (generatedStrings.size() == outputFileTimers.size()) {
             for (int i=0; i<outputFileTimers.size(); i++) {
                 System.out.println("Output string of size => " + outputFileTimers.get(i).getFileLen() + " took "

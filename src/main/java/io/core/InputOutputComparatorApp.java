@@ -49,7 +49,7 @@ public class InputOutputComparatorApp {
         }
 
         final List<FileTimer> outputFileWithoutBufferTimers = new ArrayList<>();
-        writeToFile.writeToFileWithoutBuffer(generatedStrings, outputFileWithoutBufferTimers);
+        writeToFile.writeToFileWithoutBuffer(RESOURCE_SAMPLE_FOLDER, generatedStrings, outputFileWithoutBufferTimers);
         if (generatedStrings.size() == outputFileWithoutBufferTimers.size()) {
             for(int i=0; i<outputFileWithoutBufferTimers.size(); i++) {
                 System.out.println("Output string of size => " + outputFileWithoutBufferTimers.get(i).getFileLen() + " took "
@@ -62,7 +62,7 @@ public class InputOutputComparatorApp {
         CleanUp.cleanUpFolder(RESOURCE_SAMPLE_FOLDER);
 
         final List<FileTimer> outputFileWithBufferTimers = new ArrayList<>();
-        writeToFile.writeToFileWithBuffer(generatedStrings, outputFileWithBufferTimers);
+        writeToFile.writeToFileWithBuffer(RESOURCE_SAMPLE_FOLDER, generatedStrings, outputFileWithBufferTimers);
         if (generatedStrings.size() == outputFileWithBufferTimers.size()) {
             for(int i=0; i<outputFileWithBufferTimers.size(); i++) {
                 System.out.println("Output string of size => " + outputFileWithBufferTimers.get(i).getFileLen() + " took "

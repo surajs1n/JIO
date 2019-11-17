@@ -1,5 +1,8 @@
 package io.metrics;
 
+/**
+ * File operation captor.
+ */
 public class FileTimer extends Timer {
     private int fileLen;
     private boolean isBufferUsed;
@@ -24,6 +27,13 @@ public class FileTimer extends Timer {
         this.fileLen = fileLen;
         this.isBufferUsed = isBufferUsed;
         this.bufferSize = 0;
+    }
+
+    public FileTimer(final int fileLen, final boolean isBufferUsed, final int bufferSize) {
+        super();
+        this.fileLen = fileLen;
+        this.isBufferUsed = isBufferUsed;
+        this.bufferSize = bufferSize;
     }
 
     public int getFileLen() {

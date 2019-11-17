@@ -9,16 +9,24 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Core class to contain all the read from file methods.
+ */
 public class ReadFromFile {
 
     private static final int EOF = -1;
     private static final int MAX_LIMIT = 10000000;
     private static final String GITIGNORE = "GITIGNORE";
 
+    /**
+     * Function to read list of files from folders without using buffer memory and also to capture the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
     public List<String> readFromFileWithoutBuffer(final String folderPath,
                                                   final List<FileTimer> timerList) throws IOException {
         final List<String> readFiles = new ArrayList<>();
@@ -55,6 +63,13 @@ public class ReadFromFile {
         return readFiles;
     }
 
+    /**
+     * Function to read list of files from folders using buffer memory and also captures the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
     public List<String> readFromFileWithBuffer(final String folderPath,
                                                final List<FileTimer> timerList) throws IOException {
         final List<String> readFiles = new ArrayList<>();
@@ -89,6 +104,13 @@ public class ReadFromFile {
         return readFiles;
     }
 
+    /**
+     * Function to read list of files from folders using variable buffer memory and also to capture the metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
     public List<String> readFromFileWithBuffer(final String folderPath,
                                                final Integer bufferSize,
                                                final List<FileTimer> timerList) throws IOException {
