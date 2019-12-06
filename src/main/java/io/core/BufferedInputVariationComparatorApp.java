@@ -22,6 +22,7 @@ import java.util.List;
 public class BufferedInputVariationComparatorApp {
 
     private static final String RESOURCE_SAMPLE_FOLDER = "./src/main/resources/sample";
+    private static final String RESULT_FOLDER = "./src/main/resources/results";
 
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
@@ -46,6 +47,7 @@ public class BufferedInputVariationComparatorApp {
 
         /* 1. Read the Operating System Details. */
         osDetails.fetchOSDetails();
+        final String resultingFolder = RESULT_FOLDER + "/" + OperatingSystemDetails.getUniqueOSDetails();
 
         /* 2. Generate a random string of predefined size. */
         final StringGeneratorInput generatorInput = getStringGeneratorInput();
@@ -98,11 +100,11 @@ public class BufferedInputVariationComparatorApp {
             inputFileWithBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
         }
 
-        csvWriter.writeResult("FileInputWithVaryingBufferSize-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
+        csvWriter.writeResult(resultingFolder,"FileInputWithVaryingBufferSize-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
 
         final String osHeader = osDetails.getCSVHeaderOfOSDetails();
         final String osValues = osDetails.getCSVValuesofOSDetails();
-        csvWriter.writeResult("OSDetails", osHeader, Arrays.asList(osValues));
+        csvWriter.writeResult(resultingFolder,"OSDetails", osHeader, Arrays.asList(osValues));
 
         CleanUp.cleanUpFolder(RESOURCE_SAMPLE_FOLDER);
     }
@@ -112,7 +114,7 @@ public class BufferedInputVariationComparatorApp {
                 .newInstance()
                 .minSize(10)
                 .maxSize(5000)
-                .deltaSize(50)
+                .deltaSize(500)
                 .build();
     }
 

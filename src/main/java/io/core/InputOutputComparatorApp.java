@@ -18,6 +18,7 @@ import java.util.List;
 public class InputOutputComparatorApp {
 
     private static final String RESOURCE_SAMPLE_FOLDER = "./src/main/resources/sample";
+    private static final String RESULT_FOLDER = "./src/main/resources/results";
 
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
@@ -34,6 +35,9 @@ public class InputOutputComparatorApp {
      * @param args - Arguments passed through CLI.
      */
     public static void main(String []args) throws IOException {
+
+        osDetails.fetchOSDetails();
+        final String resultingFolder = RESULT_FOLDER + "/" + OperatingSystemDetails.getUniqueOSDetails();
 
         /* 1. Generate List of Strings and pump those into files maintaining one:one (string:file) mapping and capture metrics. */
         final StringGeneratorInput generatorInput = getStringGeneratorInput();
@@ -128,17 +132,16 @@ public class InputOutputComparatorApp {
         }
 
         /* 3. Save those metrics result into CSV file for analysis.  */
-        csvWriter.writeResult("StringGenerator-Metrics", stringGeneratorTimersCSVHeader, stringGeneratorTimersCSVOutput);
-        csvWriter.writeResult("FileOutputWithoutBuffer-Metrics", outputFileWithoutBufferTimerCSVHeader, outputFileWithoutBufferTimerCSVOutput);
-        csvWriter.writeResult("FileOutputWithBuffer-Metrics", outputFileWithBufferTimerCSVHeader, outputFileWithBufferTimerCSVOutput);
-        csvWriter.writeResult("FileInputWithoutBuffer-Metrics", inputFileWithoutBufferTimerCSVHeader, inputFileWithoutBufferTimerCSVOutput);
-        csvWriter.writeResult("FileInputWithBuffer-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
+        csvWriter.writeResult(resultingFolder, "StringGenerator-Metrics", stringGeneratorTimersCSVHeader, stringGeneratorTimersCSVOutput);
+        csvWriter.writeResult(resultingFolder, "FileOutputWithoutBuffer-Metrics", outputFileWithoutBufferTimerCSVHeader, outputFileWithoutBufferTimerCSVOutput);
+        csvWriter.writeResult(resultingFolder, "FileOutputWithBuffer-Metrics", outputFileWithBufferTimerCSVHeader, outputFileWithBufferTimerCSVOutput);
+        csvWriter.writeResult(resultingFolder, "FileInputWithoutBuffer-Metrics", inputFileWithoutBufferTimerCSVHeader, inputFileWithoutBufferTimerCSVOutput);
+        csvWriter.writeResult(resultingFolder, "FileInputWithBuffer-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
 
         /* 4. Read the details of current Operating System and also save that into another CSV file.  */
-        osDetails.fetchOSDetails();
         final String osHeader = osDetails.getCSVHeaderOfOSDetails();
         final String osValues = osDetails.getCSVValuesofOSDetails();
-        csvWriter.writeResult("OSDetails", osHeader, Arrays.asList(osValues));
+        csvWriter.writeResult(resultingFolder,"OSDetails", osHeader, Arrays.asList(osValues));
     }
 
     private static StringGeneratorInput getStringGeneratorInput() {
