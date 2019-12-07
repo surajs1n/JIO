@@ -79,7 +79,7 @@ public class BufferedInputVariationComparatorApp {
         final BufferSizeInput input = getBufferSizeInput();
         for (int bufferSize = input.getMinSize(); bufferSize <= input.getMaxSize(); bufferSize += input.getDeltaSize()) {
             final List<FileTimer> bufferTimers = new ArrayList<>();
-            final List<String> readBufferedStrings = readFromFile.readFromFileWithBuffer(RESOURCE_SAMPLE_FOLDER, bufferSize, bufferTimers);
+            final List<String> readBufferedStrings = readFromFile.readFromFileWithPassedInBuffer(RESOURCE_SAMPLE_FOLDER, bufferSize, bufferTimers);
             if (readBufferedStrings.size() == bufferTimers.size()) {
                 for (int i = 0; i < bufferTimers.size(); i++) {
                     System.out.println("Input string of size => " + bufferTimers.get(i).getFileLen() + " took "
