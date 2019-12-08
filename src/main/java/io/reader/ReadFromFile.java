@@ -9,18 +9,27 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Core class to contain all the read from file methods.
+ */
 public class ReadFromFile {
 
     private static final int EOF = -1;
     private static final int MAX_LIMIT = 10000000;
     private static final String GITIGNORE = "GITIGNORE";
+    private static final String EMPTY_STRING = "";
 
-    public List<String> readFromFileWithoutBuffer(final String folderPath,
-                                                  final List<FileTimer> timerList) throws IOException {
+    /**
+     * Function to read list of files from folders without using buffer memory and also to capture the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
+    public List<String> readFromFileOnlyWithoutBuffer(final String folderPath,
+                                                      final List<FileTimer> timerList) throws IOException {
         final List<String> readFiles = new ArrayList<>();
         final File folder = new File(folderPath);
 
@@ -31,8 +40,47 @@ public class ReadFromFile {
                 timer.setStartTime(System.nanoTime());
 
                 try (InputStream fileInputStream = new FileInputStream(f.getPath())) {
-//                    byte [] tempRead = new byte[MAX_LIMIT];
-//                    int index = 0;
+                    int count = 0;
+                    int byteCharacter = fileInputStream.read();
+                    while (byteCharacter != EOF) {
+                        count++;
+                        byteCharacter = fileInputStream.read();
+                    }
+                    readFiles.add(EMPTY_STRING);
+                    timer.setFileLen(count);
+                } catch (FileNotFoundException e) {
+                    System.err.println("Not able to locate the file you are looking for : " + f.getPath());
+                }
+
+                timer.setEndTime(System.nanoTime());
+                timerList.add(timer);
+            }
+        } else {
+            System.err.println("Unfortunately, It is not a folder : " + folderPath);
+        }
+
+        return readFiles;
+    }
+
+    /**
+     * Function to read list of files from folders without using buffer memory and also to capture the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
+    public List<String> readFromFileWithPlusOperatorWithoutBuffer(final String folderPath,
+                                                                  final List<FileTimer> timerList) throws IOException {
+        final List<String> readFiles = new ArrayList<>();
+        final File folder = new File(folderPath);
+
+        if (folder.isDirectory()) {
+            File [] filePaths = getFilesWithoutGitIgnore(folder);
+            for(File f: filePaths) {
+                FileTimer timer = new FileTimer(false);
+                timer.setStartTime(System.nanoTime());
+
+                try (InputStream fileInputStream = new FileInputStream(f.getPath())) {
                     String readFile="";
                     int byteCharacter = fileInputStream.read();
                     while (byteCharacter != EOF) {
@@ -55,8 +103,223 @@ public class ReadFromFile {
         return readFiles;
     }
 
-    public List<String> readFromFileWithBuffer(final String folderPath,
-                                               final List<FileTimer> timerList) throws IOException {
+    /**
+     * Function to read list of files from folders without using buffer memory and also to capture the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
+    public List<String> readFromFileWithConcatWithoutBuffer(final String folderPath,
+                                                            final List<FileTimer> timerList) throws IOException {
+        final List<String> readFiles = new ArrayList<>();
+        final File folder = new File(folderPath);
+
+        if (folder.isDirectory()) {
+            File [] filePaths = getFilesWithoutGitIgnore(folder);
+            for(File f: filePaths) {
+                FileTimer timer = new FileTimer(false);
+                timer.setStartTime(System.nanoTime());
+
+                try (InputStream fileInputStream = new FileInputStream(f.getPath())) {
+                    String readFile="";
+                    int byteCharacter = fileInputStream.read();
+                    while (byteCharacter != EOF) {
+                        readFile = readFile.concat(String.valueOf((char)byteCharacter));
+                        byteCharacter = fileInputStream.read();
+                    }
+                    readFiles.add(readFile);
+                    timer.setFileLen(readFile.length());
+                } catch (FileNotFoundException e) {
+                    System.err.println("Not able to locate the file you are looking for : " + f.getPath());
+                }
+
+                timer.setEndTime(System.nanoTime());
+                timerList.add(timer);
+            }
+        } else {
+            System.err.println("Unfortunately, It is not a folder : " + folderPath);
+        }
+
+        return readFiles;
+    }
+
+    /**
+     * Function to read list of files from folders without using buffer memory and also to capture the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
+    public List<String> readFromFileWithStringBufferWithoutBuffer(final String folderPath,
+                                                                  final List<FileTimer> timerList) throws IOException {
+        final List<String> readFiles = new ArrayList<>();
+        final File folder = new File(folderPath);
+
+        if (folder.isDirectory()) {
+            File [] filePaths = getFilesWithoutGitIgnore(folder);
+            for(File f: filePaths) {
+                FileTimer timer = new FileTimer(false);
+                timer.setStartTime(System.nanoTime());
+
+                try (InputStream fileInputStream = new FileInputStream(f.getPath())) {
+                    StringBuffer readFileBuffer = new StringBuffer();
+                    int byteCharacter = fileInputStream.read();
+                    while (byteCharacter != EOF) {
+                        readFileBuffer.append((char)byteCharacter);
+                        byteCharacter = fileInputStream.read();
+                    }
+                    final String readFile= readFileBuffer.toString();
+                    readFiles.add(readFile);
+                    timer.setFileLen(readFile.length());
+                } catch (FileNotFoundException e) {
+                    System.err.println("Not able to locate the file you are looking for : " + f.getPath());
+                }
+
+                timer.setEndTime(System.nanoTime());
+                timerList.add(timer);
+            }
+        } else {
+            System.err.println("Unfortunately, It is not a folder : " + folderPath);
+        }
+
+        return readFiles;
+    }
+
+    /**
+     * Function to read list of files from folders without using buffer memory and also to capture the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
+    public List<String> readFromFileWithStringBuilderWithoutBuffer(final String folderPath,
+                                                                   final List<FileTimer> timerList) throws IOException {
+        final List<String> readFiles = new ArrayList<>();
+        final File folder = new File(folderPath);
+
+        if (folder.isDirectory()) {
+            File [] filePaths = getFilesWithoutGitIgnore(folder);
+            for(File f: filePaths) {
+                FileTimer timer = new FileTimer(false);
+                timer.setStartTime(System.nanoTime());
+
+                try (InputStream fileInputStream = new FileInputStream(f.getPath())) {
+                    StringBuilder readFileBuilder = new StringBuilder();
+                    int byteCharacter = fileInputStream.read();
+                    while (byteCharacter != EOF) {
+                        readFileBuilder.append((char)byteCharacter);
+                        byteCharacter = fileInputStream.read();
+                    }
+                    final String readFile= readFileBuilder.toString();
+                    readFiles.add(readFile);
+                    timer.setFileLen(readFile.length());
+                } catch (FileNotFoundException e) {
+                    System.err.println("Not able to locate the file you are looking for : " + f.getPath());
+                }
+
+                timer.setEndTime(System.nanoTime());
+                timerList.add(timer);
+            }
+        } else {
+            System.err.println("Unfortunately, It is not a folder : " + folderPath);
+        }
+
+        return readFiles;
+    }
+
+
+    /**
+     * Function to read list of files from folders using buffer memory and also captures the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
+    public List<String> readFromFileOnlyWithBuffer(final String folderPath,
+                                                   final List<FileTimer> timerList) throws IOException {
+        final List<String> readFiles = new ArrayList<>();
+        final File folder = new File(folderPath);
+
+        if (folder.isDirectory()) {
+            File [] filePaths = getFilesWithoutGitIgnore(folder);
+            for(File f: filePaths) {
+                FileTimer timer = new FileTimer(true);
+                timer.setStartTime(System.nanoTime());
+
+                try (InputStream fileInputStream = new BufferedInputStream(new FileInputStream(f.getPath()))) {
+                    int count = 0;
+                    int byteCharacter = fileInputStream.read();
+                    while (byteCharacter != EOF) {
+                        count++;
+                        byteCharacter = fileInputStream.read();
+                    }
+                    readFiles.add(EMPTY_STRING);
+                    timer.setFileLen(count);
+                } catch (FileNotFoundException e) {
+                    System.err.println("Not able to locate the file you are looking for : " + f.getPath());
+                }
+
+                timer.setEndTime(System.nanoTime());
+                timerList.add(timer);
+            }
+        } else {
+            System.err.println("Unfortunately, It is not a folder : " + folderPath);
+        }
+
+        return readFiles;
+    }
+
+    /**
+     * Function to read list of files from folders using buffer memory and also captures the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
+    public List<String> readFromFileWithPlusOperatorWithBuffer(final String folderPath,
+                                                               final List<FileTimer> timerList) throws IOException {
+        final List<String> readFiles = new ArrayList<>();
+        final File folder = new File(folderPath);
+
+        if (folder.isDirectory()) {
+            File [] filePaths = getFilesWithoutGitIgnore(folder);
+            for(File f: filePaths) {
+                FileTimer timer = new FileTimer(true);
+                timer.setStartTime(System.nanoTime());
+
+                try (InputStream fileInputStream = new BufferedInputStream(new FileInputStream(f.getPath()))) {
+                    String readFile = "";
+                    int byteCharacter = fileInputStream.read();
+                    while (byteCharacter != EOF) {
+                        readFile = readFile + (char)byteCharacter;
+                        byteCharacter = fileInputStream.read();
+                    }
+                    readFiles.add(readFile);
+                    timer.setFileLen(readFile.length());
+                } catch (FileNotFoundException e) {
+                    System.err.println("Not able to locate the file you are looking for : " + f.getPath());
+                }
+
+                timer.setEndTime(System.nanoTime());
+                timerList.add(timer);
+            }
+        } else {
+            System.err.println("Unfortunately, It is not a folder : " + folderPath);
+        }
+
+        return readFiles;
+    }
+
+    /**
+     * Function to read list of files from folders using buffer memory and also captures the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
+    public List<String> readFromFileWithConcatWithBuffer(final String folderPath,
+                                                         final List<FileTimer> timerList) throws IOException {
         final List<String> readFiles = new ArrayList<>();
         final File folder = new File(folderPath);
 
@@ -89,9 +352,100 @@ public class ReadFromFile {
         return readFiles;
     }
 
-    public List<String> readFromFileWithBuffer(final String folderPath,
-                                               final Integer bufferSize,
-                                               final List<FileTimer> timerList) throws IOException {
+    /**
+     * Function to read list of files from folders using buffer memory and also captures the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
+    public List<String> readFromFileWithStringBufferWithBuffer(final String folderPath,
+                                                               final List<FileTimer> timerList) throws IOException {
+        final List<String> readFiles = new ArrayList<>();
+        final File folder = new File(folderPath);
+
+        if (folder.isDirectory()) {
+            File [] filePaths = getFilesWithoutGitIgnore(folder);
+            for(File f: filePaths) {
+                FileTimer timer = new FileTimer(true);
+                timer.setStartTime(System.nanoTime());
+
+                try (InputStream fileInputStream = new BufferedInputStream(new FileInputStream(f.getPath()))) {
+                    StringBuffer readFileBuffer = new StringBuffer();
+                    int byteCharacter = fileInputStream.read();
+                    while (byteCharacter != EOF) {
+                        readFileBuffer.append((char)byteCharacter);
+                        byteCharacter = fileInputStream.read();
+                    }
+                    final String readFile= readFileBuffer.toString();
+                    readFiles.add(readFile);
+                    timer.setFileLen(readFile.length());
+                } catch (FileNotFoundException e) {
+                    System.err.println("Not able to locate the file you are looking for : " + f.getPath());
+                }
+
+                timer.setEndTime(System.nanoTime());
+                timerList.add(timer);
+            }
+        } else {
+            System.err.println("Unfortunately, It is not a folder : " + folderPath);
+        }
+
+        return readFiles;
+    }
+
+    /**
+     * Function to read list of files from folders using buffer memory and also captures the Metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
+    public List<String> readFromFileWithStringBuilderWithBuffer(final String folderPath,
+                                                                final List<FileTimer> timerList) throws IOException {
+        final List<String> readFiles = new ArrayList<>();
+        final File folder = new File(folderPath);
+
+        if (folder.isDirectory()) {
+            File [] filePaths = getFilesWithoutGitIgnore(folder);
+            for(File f: filePaths) {
+                FileTimer timer = new FileTimer(true);
+                timer.setStartTime(System.nanoTime());
+
+                try (InputStream fileInputStream = new BufferedInputStream(new FileInputStream(f.getPath()))) {
+                    StringBuilder readFileBuilder = new StringBuilder();
+                    int byteCharacter = fileInputStream.read();
+                    while (byteCharacter != EOF) {
+                        readFileBuilder.append((char)byteCharacter);
+                        byteCharacter = fileInputStream.read();
+                    }
+                    final String readFile= readFileBuilder.toString();
+                    readFiles.add(readFile);
+                    timer.setFileLen(readFile.length());
+                } catch (FileNotFoundException e) {
+                    System.err.println("Not able to locate the file you are looking for : " + f.getPath());
+                }
+
+                timer.setEndTime(System.nanoTime());
+                timerList.add(timer);
+            }
+        } else {
+            System.err.println("Unfortunately, It is not a folder : " + folderPath);
+        }
+
+        return readFiles;
+    }
+
+    /**
+     * Function to read list of files from folders using variable buffer memory and also to capture the metrics.
+     * @param folderPath - Path of folder.
+     * @param timerList - List of Timer
+     * @return - List of read strings.
+     * @throws IOException - throw in case of exception.
+     */
+    public List<String> readFromFileWithPassedInBuffer(final String folderPath,
+                                                       final Integer bufferSize,
+                                                       final List<FileTimer> timerList) throws IOException {
         final List<String> readFiles = new ArrayList<>();
         final File folder = new File(folderPath);
 
@@ -103,12 +457,13 @@ public class ReadFromFile {
                 timer.setBufferSize(bufferSize);
 
                 try (InputStream fileInputStream = new BufferedInputStream(new FileInputStream(f.getPath()), bufferSize)) {
-                    String readFile = "";
+                    StringBuilder readFileBuilder = new StringBuilder();
                     int byteCharacter = fileInputStream.read();
                     while (byteCharacter != EOF) {
-                        readFile = readFile.concat(String.valueOf((char)byteCharacter));
+                        readFileBuilder.append((char)byteCharacter);
                         byteCharacter = fileInputStream.read();
                     }
+                    final String readFile= readFileBuilder.toString();
                     readFiles.add(readFile);
                     timer.setFileLen(readFile.length());
                 } catch (FileNotFoundException e) {

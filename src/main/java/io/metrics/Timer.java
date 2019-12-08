@@ -1,5 +1,8 @@
 package io.metrics;
 
+/**
+ * Base timer class to metrics.
+ */
 public class Timer {
     private long startTime;
     private long endTime;
@@ -22,5 +25,13 @@ public class Timer {
 
     public long getEndTime() {
         return this.endTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Timer{" +
+                "startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
     }
 }

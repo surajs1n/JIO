@@ -22,6 +22,7 @@ import java.util.List;
 public class BufferedInputVariationComparatorApp {
 
     private static final String RESOURCE_SAMPLE_FOLDER = "./src/main/resources/sample";
+    private static final String RESULT_FOLDER = "./src/main/resources/results";
 
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
@@ -39,7 +40,6 @@ public class BufferedInputVariationComparatorApp {
      * 6. Write Buffered FileOutput Varying.
      * 7. CleanUp the directory.
      *
-     *
      * @param args - Arguments captured through CLI.
      * @throws IOException
      */
@@ -47,6 +47,7 @@ public class BufferedInputVariationComparatorApp {
 
         /* 1. Read the Operating System Details. */
         osDetails.fetchOSDetails();
+        final String resultingFolder = RESULT_FOLDER + "/" + OperatingSystemDetails.getUniqueOSDetails();
 
         /* 2. Generate a random string of predefined size. */
         final StringGeneratorInput generatorInput = getStringGeneratorInput();
@@ -63,7 +64,7 @@ public class BufferedInputVariationComparatorApp {
 
         /* 3. Write generated string onto File. */
         final List<FileTimer> outputFileTimers = new ArrayList<>();
-        writeToFile.writeToFileWithBuffer(generatedStrings, outputFileTimers);
+        writeToFile.writeToFileWithBuffer(RESOURCE_SAMPLE_FOLDER, generatedStrings, outputFileTimers);
         if (generatedStrings.size() == outputFileTimers.size()) {
             for (int i=0; i<outputFileTimers.size(); i++) {
                 System.out.println("Output string of size => " + outputFileTimers.get(i).getFileLen() + " took "
@@ -78,7 +79,7 @@ public class BufferedInputVariationComparatorApp {
         final BufferSizeInput input = getBufferSizeInput();
         for (int bufferSize = input.getMinSize(); bufferSize <= input.getMaxSize(); bufferSize += input.getDeltaSize()) {
             final List<FileTimer> bufferTimers = new ArrayList<>();
-            final List<String> readBufferedStrings = readFromFile.readFromFileWithBuffer(RESOURCE_SAMPLE_FOLDER, bufferSize, bufferTimers);
+            final List<String> readBufferedStrings = readFromFile.readFromFileWithPassedInBuffer(RESOURCE_SAMPLE_FOLDER, bufferSize, bufferTimers);
             if (readBufferedStrings.size() == bufferTimers.size()) {
                 for (int i = 0; i < bufferTimers.size(); i++) {
                     System.out.println("Input string of size => " + bufferTimers.get(i).getFileLen() + " took "
@@ -99,11 +100,11 @@ public class BufferedInputVariationComparatorApp {
             inputFileWithBufferTimerCSVOutput.add(timer.getObjectDataInCSV());
         }
 
-        csvWriter.writeResult("FileInputWithVaryingBufferSize-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
+        csvWriter.writeResult(resultingFolder,"FileInputWithVaryingBufferSize-Metrics", inputFileWithBufferTimerCSVHeader, inputFileWithBufferTimerCSVOutput);
 
         final String osHeader = osDetails.getCSVHeaderOfOSDetails();
         final String osValues = osDetails.getCSVValuesofOSDetails();
-        csvWriter.writeResult("OSDetails", osHeader, Arrays.asList(osValues));
+        csvWriter.writeResult(resultingFolder,"OSDetails", osHeader, Arrays.asList(osValues));
 
         CleanUp.cleanUpFolder(RESOURCE_SAMPLE_FOLDER);
     }
@@ -113,7 +114,7 @@ public class BufferedInputVariationComparatorApp {
                 .newInstance()
                 .minSize(10)
                 .maxSize(5000)
-                .deltaSize(50)
+                .deltaSize(500)
                 .build();
     }
 
