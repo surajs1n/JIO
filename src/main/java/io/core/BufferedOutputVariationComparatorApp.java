@@ -100,8 +100,8 @@ public class BufferedOutputVariationComparatorApp {
     private static BufferSizeInput getBufferSizeInput() {
         return BufferSizeInput.Builder
                 .newInstance()
-                .minSize(10)
-                .maxSize(5000)
+                .minSize(1000)
+                .maxSize(1000)
                 .deltaSize(500)
                 .build();
     }
