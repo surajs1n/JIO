@@ -301,7 +301,7 @@ public class InputOutputComparatorApp {
     private static StringGeneratorInput getStringGeneratorInput() {
         return StringGeneratorInput.Builder
                 .newInstance()
-                .minLen(1000)
+                .minLen(10000)
                 .maxLen(10000)
                 .deltaLen(1000)
                 .numberOfCopies(50)

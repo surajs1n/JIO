@@ -166,7 +166,7 @@ public class ReadFromFile {
                     StringBuffer readFileBuffer = new StringBuffer();
                     int byteCharacter = fileInputStream.read();
                     while (byteCharacter != EOF) {
-                        readFileBuffer.append(String.valueOf((char)byteCharacter));
+                        readFileBuffer.append((char)byteCharacter);
                         byteCharacter = fileInputStream.read();
                     }
                     final String readFile= readFileBuffer.toString();
@@ -208,7 +208,7 @@ public class ReadFromFile {
                     StringBuilder readFileBuilder = new StringBuilder();
                     int byteCharacter = fileInputStream.read();
                     while (byteCharacter != EOF) {
-                        readFileBuilder.append(String.valueOf((char)byteCharacter));
+                        readFileBuilder.append((char)byteCharacter);
                         byteCharacter = fileInputStream.read();
                     }
                     final String readFile= readFileBuilder.toString();
@@ -292,7 +292,7 @@ public class ReadFromFile {
                     String readFile = "";
                     int byteCharacter = fileInputStream.read();
                     while (byteCharacter != EOF) {
-                        readFile = readFile.concat(String.valueOf((char)byteCharacter));
+                        readFile = readFile + (char)byteCharacter;
                         byteCharacter = fileInputStream.read();
                     }
                     readFiles.add(readFile);
@@ -374,7 +374,7 @@ public class ReadFromFile {
                     StringBuffer readFileBuffer = new StringBuffer();
                     int byteCharacter = fileInputStream.read();
                     while (byteCharacter != EOF) {
-                        readFileBuffer.append(String.valueOf((char)byteCharacter));
+                        readFileBuffer.append((char)byteCharacter);
                         byteCharacter = fileInputStream.read();
                     }
                     final String readFile= readFileBuffer.toString();
@@ -416,7 +416,7 @@ public class ReadFromFile {
                     StringBuilder readFileBuilder = new StringBuilder();
                     int byteCharacter = fileInputStream.read();
                     while (byteCharacter != EOF) {
-                        readFileBuilder.append(String.valueOf((char)byteCharacter));
+                        readFileBuilder.append((char)byteCharacter);
                         byteCharacter = fileInputStream.read();
                     }
                     final String readFile= readFileBuilder.toString();
@@ -460,7 +460,7 @@ public class ReadFromFile {
                     StringBuilder readFileBuilder = new StringBuilder();
                     int byteCharacter = fileInputStream.read();
                     while (byteCharacter != EOF) {
-                        readFileBuilder.append(String.valueOf((char)byteCharacter));
+                        readFileBuilder.append((char)byteCharacter);
                         byteCharacter = fileInputStream.read();
                     }
                     final String readFile= readFileBuilder.toString();
