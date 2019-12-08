@@ -19,6 +19,10 @@ public class InputOutputComparatorApp {
 
     private static final String RESOURCE_SAMPLE_FOLDER = "./src/main/resources/sample";
     private static final String RESULT_FOLDER = "./src/main/resources/results";
+    private static final long MINIMUM_STRING_LENGTH = 100;
+    private static final long MAXIMUM_STRING_LENGTH = 200000;
+    private static final long DELTA_OF_STRING_LENGTH = 100;
+    private static final long MAXIMUM_NUMBER_OF_COPIES = 2000;
 
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
@@ -301,10 +305,10 @@ public class InputOutputComparatorApp {
     private static StringGeneratorInput getStringGeneratorInput() {
         return StringGeneratorInput.Builder
                 .newInstance()
-                .minLen(100000)
-                .maxLen(100000)
-                .deltaLen(1000)
-                .numberOfCopies(50)
+                .minLen(MINIMUM_STRING_LENGTH)
+                .maxLen(MAXIMUM_STRING_LENGTH)
+                .deltaLen(DELTA_OF_STRING_LENGTH)
+                .numberOfCopies(MAXIMUM_NUMBER_OF_COPIES)
                 .build();
     }
 }

@@ -22,6 +22,10 @@ public class BufferedOutputVariationComparatorApp {
 
     private static final String RESOURCE_SAMPLE_FOLDER = "./src/main/resources/sample";
     private static final String RESULT_FOLDER = "./src/main/resources/results";
+    private static final long TEN_MEGA_BYTE = (10*1024*1024);
+    private static final int MINIMUM_BUFFER_SIZE = 1;
+    private static final int MAXIMUM_BUFFER_SIZE = 1000000;
+    private static final int DELTA_OF_BUFFER_SIZE = 1;
 
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
@@ -100,9 +104,9 @@ public class BufferedOutputVariationComparatorApp {
     private static BufferSizeInput getBufferSizeInput() {
         return BufferSizeInput.Builder
                 .newInstance()
-                .minSize(1000)
-                .maxSize(1000)
-                .deltaSize(500)
+                .minSize(MINIMUM_BUFFER_SIZE)
+                .maxSize(MAXIMUM_BUFFER_SIZE)
+                .deltaSize(DELTA_OF_BUFFER_SIZE)
                 .build();
     }
 
@@ -113,8 +117,8 @@ public class BufferedOutputVariationComparatorApp {
     private static StringGeneratorInput getStringGeneratorInput() {
         return StringGeneratorInput.Builder
                 .newInstance()
-                .minLen(100000)
-                .maxLen(100000)
+                .minLen(TEN_MEGA_BYTE)
+                .maxLen(TEN_MEGA_BYTE)
                 .deltaLen(1)
                 .numberOfCopies(1)
                 .build();
