@@ -48,14 +48,14 @@ public class StringGenerator {
         timer.setStartTime(System.nanoTime());
 
         final int length = ALPHABETS.length();
-        String inputString = "";
+        StringBuilder readFileBuilder = new StringBuilder();
 
         Random random = new Random();
         for(int i=0; i<startLen; i++) {
-            inputString = inputString.concat(String.valueOf(ALPHABETS.charAt(random.nextInt(length))));
+            readFileBuilder.append(String.valueOf(ALPHABETS.charAt(random.nextInt(length))));
         }
 
         timer.setEndTime(System.nanoTime());
-        return inputString;
+        return readFileBuilder.toString();
     }
 }
