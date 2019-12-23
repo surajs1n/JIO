@@ -72,7 +72,7 @@ public class BufferedOutputVariationComparatorApp {
             if (generatedStrings.size() == bufferTimers.size()) {
                 for (int i=0; i< bufferTimers.size(); i++) {
                     System.out.println("Output string of size => " + bufferTimers.get(i).getFileLen() + " took "
-                            + (bufferTimers.get(i).getEndTime() - bufferTimers.get(i).getStartTime()) + " time to read from file with "
+                            + (bufferTimers.get(i).getEndTime() - bufferTimers.get(i).getStartTime()) + " time to write into file with "
                             + bufferTimers.get(i).getBufferSize() + " buffer size.");
 
                     outputFileTimers.add(bufferTimers.get(0));
