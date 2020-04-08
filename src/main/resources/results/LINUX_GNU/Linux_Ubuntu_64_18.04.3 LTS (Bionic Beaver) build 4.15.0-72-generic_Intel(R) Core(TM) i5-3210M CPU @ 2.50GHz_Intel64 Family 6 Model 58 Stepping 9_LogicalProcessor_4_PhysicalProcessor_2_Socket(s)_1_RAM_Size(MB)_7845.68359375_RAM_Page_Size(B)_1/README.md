@@ -50,3 +50,13 @@ After crossing `10,000` the graph again shows a dip, then stays consistent.
 
 On taking the larger pattern, we can see the graph tends to move upwards after crossing `~28,000` buffer size. On taking reference from top second graph beyond `50,000` buffer size the graph was upwards trending. Therefore, we are not going to deep dive there.  
 
+---
+
+# Observation of Wrting into File with different buffer memory size
+
+![FileOutputWithVaryingBufferSizeMetrics](FileOutputWithVaryingBufferSizeMetrics.png)
+
+
+
+
+
