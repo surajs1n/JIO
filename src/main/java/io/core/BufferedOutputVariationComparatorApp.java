@@ -22,6 +22,10 @@ public class BufferedOutputVariationComparatorApp {
 
     private static final String RESOURCE_SAMPLE_FOLDER = "./src/main/resources/sample";
     private static final String RESULT_FOLDER = "./src/main/resources/results";
+    private static final long HUNDRED_MEGA_BYTE = (100*1024*1024);
+    private static final int MINIMUM_BUFFER_SIZE = 1;
+    private static final int MAXIMUM_BUFFER_SIZE = 100000;
+    private static final int DELTA_OF_BUFFER_SIZE = 1;
 
     private static final StringGenerator stringGenerator = new StringGenerator();
     private static final WriteToFile writeToFile = new WriteToFile();
@@ -68,7 +72,7 @@ public class BufferedOutputVariationComparatorApp {
             if (generatedStrings.size() == bufferTimers.size()) {
                 for (int i=0; i< bufferTimers.size(); i++) {
                     System.out.println("Output string of size => " + bufferTimers.get(i).getFileLen() + " took "
-                            + (bufferTimers.get(i).getEndTime() - bufferTimers.get(i).getStartTime()) + " time to read from file with "
+                            + (bufferTimers.get(i).getEndTime() - bufferTimers.get(i).getStartTime()) + " time to write into file with "
                             + bufferTimers.get(i).getBufferSize() + " buffer size.");
 
                     outputFileTimers.add(bufferTimers.get(0));
@@ -100,9 +104,9 @@ public class BufferedOutputVariationComparatorApp {
     private static BufferSizeInput getBufferSizeInput() {
         return BufferSizeInput.Builder
                 .newInstance()
-                .minSize(1000)
-                .maxSize(1000)
-                .deltaSize(500)
+                .minSize(MINIMUM_BUFFER_SIZE)
+                .maxSize(MAXIMUM_BUFFER_SIZE)
+                .deltaSize(DELTA_OF_BUFFER_SIZE)
                 .build();
     }
 
@@ -113,8 +117,8 @@ public class BufferedOutputVariationComparatorApp {
     private static StringGeneratorInput getStringGeneratorInput() {
         return StringGeneratorInput.Builder
                 .newInstance()
-                .minLen(100000)
-                .maxLen(100000)
+                .minLen(HUNDRED_MEGA_BYTE)
+                .maxLen(HUNDRED_MEGA_BYTE)
                 .deltaLen(1)
                 .numberOfCopies(1)
                 .build();
